@@ -44,11 +44,13 @@ impl fmt::Display for Factorization {
 
 fn format_factor(base: u128, exp: usize) -> String {
     fn format_exp(exp: usize) -> String {
-        if exp < 2 || exp > 9 {
-            format!("^{}", exp)
-        } else {
-            SUPERSCRIPTS[exp].to_string()
+        if exp <= 1 {
+            return "".to_string();
         }
+        if exp <= 9 {
+            return SUPERSCRIPTS[exp].to_string();
+        }
+        format!("^{}", exp)
     }
     format!("{}{}", base, format_exp(exp))
 }
