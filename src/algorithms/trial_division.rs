@@ -4,12 +4,14 @@ pub struct TrialDivision;
 
 impl Factorize for TrialDivision {
     fn factorize(&self, n: u128) -> Vec<u128> {
-        FactorizableNumber::try_from(n).map_or(vec![], trial_div)
+        if n <= 1 {
+            return vec![n];
+        }
+        trial_div(n)
     }
 }
 
-fn trial_div(n: FactorizableNumber) -> Vec<u128> {
-    let mut n = n.value();
+fn trial_div(mut n: u128) -> Vec<u128> {
     let mut factors = vec![];
     let mut div = Divisor::new();
     while div.square() <= n {
@@ -53,27 +55,6 @@ impl Divisor {
         n % self.0 == 0
     }
 }
-
-struct FactorizableNumber(u128);
-
-impl FactorizableNumber {
-    fn value(&self) -> u128 {
-        self.0
-    }
-}
-
-impl TryFrom<u128> for FactorizableNumber {
-    type Error = &'static str;
-
-    fn try_from(value: u128) -> Result<Self, Self::Error> {
-        if value > 1 {
-            Ok(FactorizableNumber(value))
-        } else {
-            Err("Value must be greater than one")
-        }
-    }
-}
-
 
 #[cfg(test)]
 mod tests {
