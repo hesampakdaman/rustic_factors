@@ -4,4 +4,4 @@ pub use traits::factorize::Factorize;
 pub mod algorithms;
 
 pub mod factors;
-pub use factors::Factors;
+pub use factors::Factorization;

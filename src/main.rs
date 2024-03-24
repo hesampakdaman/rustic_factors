@@ -1,5 +1,5 @@
 use rustic_factors::algorithms;
-use rustic_factors::Factors;
+use rustic_factors::Factorization;
 use std::env;
 
 fn main() {
@@ -16,7 +16,7 @@ fn main() {
         .expect("Please provide a valid positive integer");
 
     match method.as_str() {
-        "trial_division" => println!("{}", Factors::new(algorithms::TrialDivision, n).display()),
+        "trial_division" => println!("{}", Factorization::new(n, algorithms::TrialDivision).display()),
         _ => eprintln!("Unknown algorithm. Available options: trial_division"),
     }
 }

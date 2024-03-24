@@ -1,21 +1,21 @@
 use crate::Factorize;
 
-pub struct Factors {
+pub struct Factorization {
     number: u128,
-    result: Vec<u128>,
+    factors: Vec<u128>,
 }
 
-impl Factors {
-    pub fn new(f: impl Factorize, n: u128) -> Self {
-        Factors {
+impl Factorization {
+    pub fn new(n: u128, f: impl Factorize) -> Self {
+        Factorization {
             number: n,
-            result: f.factorize(n),
+            factors: f.factorize(n),
         }
     }
 
     pub fn display(&self) -> String {
         let factors = self
-            .result
+            .factors
             .iter()
             .map(|p| p.to_string())
             .collect::<Vec<_>>()
