@@ -19,7 +19,7 @@ fn trial_div(mut n: u128) -> Vec<u128> {
             factors.push(div.value());
             n /= div.value();
         }
-        div = div.next()
+        div.next();
     }
     if is_still_undivided(n) {
         factors.push(n);
@@ -38,9 +38,9 @@ impl Divisor {
         Divisor(2)
     }
 
-    fn next(&self) -> Self {
-        let val = self.0 + if self.0 == 2 { 1 } else { 2 };
-        Self(val)
+    fn next(&mut self) -> &mut Self {
+        self.0 += if self.0 == 2 { 1 } else { 2 };
+        self
     }
 
     fn value(&self) -> u128 {
