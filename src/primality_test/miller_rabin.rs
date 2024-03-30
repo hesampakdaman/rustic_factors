@@ -1,9 +1,6 @@
 mod utils;
 mod witnessed;
 
-use rand::Rng;
-use std::ops::Range;
-
 use crate::traits::PrimalityTest;
 use witnessed::Witnessed;
 
@@ -17,34 +14,15 @@ impl PrimalityTest for MillerRabin {
         if p < 2 || p % 2 == 0 {
             return false;
         }
-        miller_rabin_test(p, 10)
+        miller_rabin(p, 10)
     }
 }
 
-fn miller_rabin_test(p: u128, trials: usize) -> bool {
+fn miller_rabin(p: u128, trials: usize) -> bool {
     let witnessed = Witnessed::new(p);
-    let is_no_witness_for_p = |a| !witnessed.by(a);
-    RandomIntegers::new(1..p)
+    utils::RandomIntegers::new(1..p)
         .take(trials)
-        .all(is_no_witness_for_p)
-}
-
-struct RandomIntegers {
-    range: Range<u128>,
-}
-
-impl RandomIntegers {
-    pub fn new(range: Range<u128>) -> Self {
-        Self { range }
-    }
-}
-
-impl Iterator for RandomIntegers {
-    type Item = u128;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        Some(rand::thread_rng().gen_range(self.range.clone()))
-    }
+        .all(|randint| witnessed.not_by(randint))
 }
 
 #[cfg(test)]

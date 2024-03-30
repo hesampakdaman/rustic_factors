@@ -2,40 +2,43 @@ use super::utils;
 
 pub struct Witnessed {
     number: u128,
-    n_minus_1_exp: Decomposed,
+    n_minus_1: Decomposed,
 }
 
 impl Witnessed {
     pub fn new(number: u128) -> Self {
-        Self {
-            number,
-            n_minus_1_exp: Decomposed::new(number - 1),
+        let n_minus_1 = Decomposed::new(number - 1);
+        Self { number, n_minus_1 }
+    }
+
+    pub fn not_by(&self, witness_candidate: u128) -> bool {
+        match self.raise_to_n_minus_1(witness_candidate) {
+            Ok(result) => passes_fermats_condition(result),
+            Err(ExponentiationErr::FoundNonTrivialSqrtOf1) => false,
         }
     }
 
-    pub fn by(&self, base: u128) -> bool {
-        match self.find_nontrivial_sqrt_of_1(base) {
-            SqrtOfOne::NonTrivial(_) => true,
-            SqrtOfOne::TrivialOnly(x) => !utils::passes_fermats_condition(x),
-        }
-    }
-
-    fn find_nontrivial_sqrt_of_1(&self, base: u128) -> SqrtOfOne {
-        let odd_factor_in_exp = self.n_minus_1_exp.odd_factor;
-        let mut solution = utils::modular_exponentiation(base, odd_factor_in_exp, self.number);
-        for _ in 0..self.n_minus_1_exp.exponent_of_2 {
-            if utils::is_nontrivial_sqrt_of_1(solution, self.number) {
-                return SqrtOfOne::NonTrivial(solution);
+    fn raise_to_n_minus_1(&self, base: u128) -> Result<RaisedToNMinus1, ExponentiationErr> {
+        let odd_factor_in_exp = self.n_minus_1.odd_factor;
+        let mut result = utils::modular_exponentiation(base, odd_factor_in_exp, self.number);
+        for _ in 0..self.n_minus_1.exponent_of_2 {
+            if utils::is_nontrivial_sqrt_of_1(result, self.number) {
+                return Err(ExponentiationErr::FoundNonTrivialSqrtOf1);
             }
-            solution = (solution * solution) % self.number;
+            result = (result * result) % self.number;
         }
-        SqrtOfOne::TrivialOnly(solution)
+        Ok(RaisedToNMinus1(result))
     }
 }
 
-enum SqrtOfOne {
-    NonTrivial(u128),
-    TrivialOnly(u128),
+fn passes_fermats_condition(r: RaisedToNMinus1) -> bool {
+    r.0 == 1
+}
+
+struct RaisedToNMinus1(u128);
+
+enum ExponentiationErr {
+    FoundNonTrivialSqrtOf1,
 }
 
 struct Decomposed {

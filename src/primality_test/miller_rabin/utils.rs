@@ -1,3 +1,24 @@
+use rand::Rng;
+use std::ops::Range;
+
+pub struct RandomIntegers {
+    range: Range<u128>,
+}
+
+impl RandomIntegers {
+    pub fn new(range: Range<u128>) -> Self {
+        Self { range }
+    }
+}
+
+impl Iterator for RandomIntegers {
+    type Item = u128;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        Some(rand::thread_rng().gen_range(self.range.clone()))
+    }
+}
+
 pub fn modular_exponentiation(base: u128, exp: u128, modulus: u128) -> u128 {
     if modulus == 1 {
         return 0;
@@ -23,10 +44,6 @@ pub fn highest_power_of_2_divisor(base: u128) -> u32 {
         base /= 2;
     }
     exp
-}
-
-pub fn passes_fermats_condition(x: u128) -> bool {
-    x == 1
 }
 
 pub fn is_nontrivial_sqrt_of_1(solution: u128, number: u128) -> bool {
