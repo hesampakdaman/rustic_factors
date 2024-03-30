@@ -2,49 +2,55 @@ use super::utils;
 
 pub struct Witnessed {
     number: u128,
-    decomposed: DecomposedExponent,
+    n_minus_1_exp: Decomposed,
 }
 
 impl Witnessed {
     pub fn new(number: u128) -> Self {
-        let exponent = number - 1;
-        let decomposed = DecomposedExponent::new(exponent);
-        Self { number, decomposed }
+        Self {
+            number,
+            n_minus_1_exp: Decomposed::new(number - 1),
+        }
     }
 
     pub fn by(&self, base: u128) -> bool {
-        let mut x = utils::modular_exponentiation(base, self.decomposed.odd_factor, self.number);
-        for _ in 1..=self.decomposed.even_exponent {
-            if self.is_nontrivial_sqrt_of_1(x) {
-                return true;
-            }
-            x = (x * x) % self.number;
+        match self.find_nontrivial_sqrt_of_1(base) {
+            SqrtOfOne::NonTrivial(_) => true,
+            SqrtOfOne::TrivialOnly(x) => !utils::passes_fermats_condition(x),
         }
-        // at this point x = a^{n-1} % n
-        // recall that a^{n-1} % n must eq to 1
-        // if n is prime
-        utils::fails_fermats_test(x)
     }
 
-    fn is_nontrivial_sqrt_of_1(&self, x: u128) -> bool {
-        let squared = (x * x) % self.number;
-        squared == 1 && x != 1 && x != self.number - 1
+    fn find_nontrivial_sqrt_of_1(&self, base: u128) -> SqrtOfOne {
+        let odd_factor_in_exp = self.n_minus_1_exp.odd_factor;
+        let mut solution = utils::modular_exponentiation(base, odd_factor_in_exp, self.number);
+        for _ in 0..self.n_minus_1_exp.exponent_of_2 {
+            if utils::is_nontrivial_sqrt_of_1(solution, self.number) {
+                return SqrtOfOne::NonTrivial(solution);
+            }
+            solution = (solution * solution) % self.number;
+        }
+        SqrtOfOne::TrivialOnly(solution)
     }
 }
 
-struct DecomposedExponent {
-    even_exponent: u32,
+enum SqrtOfOne {
+    NonTrivial(u128),
+    TrivialOnly(u128),
+}
+
+struct Decomposed {
+    exponent_of_2: u32,
     odd_factor: u128,
 }
 
-impl DecomposedExponent {
-    /// Decomposes `exponent` into `even_exponent` and `odd_factor`,
-    /// where `exponent = 2^even_exponent * odd_factor`.
-    pub fn new(exponent: u128) -> Self {
-        let even_exponent = utils::highest_power_of_2_divisor(exponent);
-        let odd_factor = exponent / 2u128.pow(even_exponent);
+impl Decomposed {
+    /// Decomposes `number` into `exponent_of_2` and `odd_factor`,
+    /// where `number = 2^exponent_of_2 * odd_factor`.
+    pub fn new(number: u128) -> Self {
+        let exponent_of_2 = utils::highest_power_of_2_divisor(number);
+        let odd_factor = number / 2u128.pow(exponent_of_2);
         Self {
-            even_exponent,
+            exponent_of_2,
             odd_factor,
         }
     }

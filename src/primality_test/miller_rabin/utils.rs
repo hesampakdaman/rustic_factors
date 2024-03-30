@@ -25,6 +25,11 @@ pub fn highest_power_of_2_divisor(base: u128) -> u32 {
     exp
 }
 
-pub fn fails_fermats_test(x: u128) -> bool {
-    x != 1
+pub fn passes_fermats_condition(x: u128) -> bool {
+    x == 1
+}
+
+pub fn is_nontrivial_sqrt_of_1(solution: u128, number: u128) -> bool {
+    let squared = (solution * solution) % number;
+    squared == 1 && solution != 1 && solution != number - 1
 }
