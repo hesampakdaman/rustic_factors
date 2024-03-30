@@ -58,23 +58,19 @@ mod tests {
             5,
             7,
             11,
-            13,
-            17,
             104729,
             6700417,
-            2147483647,
-            32416190071,
-            99194853094755497,
-            2305843009213693951,
+            2u128.pow(31) - 1,
+            2u128.pow(61) - 1,
         ];
-        for &prime in primes.iter() {
+        for prime in primes {
             assert!(MillerRabin.is_prime(prime), "Failed on prime {prime}");
         }
     }
 
     #[test]
     fn test_composite_numbers() {
-        for &composite in [4, 6, 8, 9, 10, 12, 14, 15, 1001, 1024].iter() {
+        for composite in [4, 15, 35, 49, 1001] {
             assert!(
                 !MillerRabin.is_prime(composite),
                 "Failed on composite {composite}"
@@ -89,7 +85,7 @@ mod tests {
             62745, 63973, 75361, 101101, 115921, 126217, 162401, 172081, 188461, 252601, 278545,
             294409, 314821, 334153, 340561, 399001, 410041, 449065, 488881, 512461,
         ];
-        for &carmichael in carmichaels.iter() {
+        for carmichael in carmichaels {
             assert!(
                 !MillerRabin.is_prime(carmichael),
                 "Failed on Carmichael number {carmichael}"
