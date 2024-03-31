@@ -1,7 +1,7 @@
-pub fn floyds_cycle_detection<F, P>(init: u128, next: F, finished: P) -> (u128, u128)
+pub fn floyds_cycle_detection<F, P>(init: u128, next: &F, finished: &P) -> (u128, u128)
 where
-    F: Fn(u128) -> u128,
-    P: Fn(u128, u128) -> bool,
+    F: Fn(u128) -> u128 + ?Sized,
+    P: Fn(u128, u128) -> bool + ?Sized,
 {
     let mut tortoise = init;
     let mut hare = next(tortoise);

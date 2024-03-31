@@ -1,39 +1,68 @@
+use rand::Rng;
 mod utils;
+use std::collections::VecDeque;
+
+use crate::primality_test::MillerRabin;
+use crate::traits::PrimalityTest;
 use crate::Factorize;
 
 pub struct PollardsRho;
 
 impl Factorize for PollardsRho {
-    fn factorize(&self, mut n: u128) -> Vec<u128> {
-        if n <= 3 {
+    fn factorize(&self, n: u128) -> Vec<u128> {
+        if n <= 3 || MillerRabin.is_prime(n) {
             return vec![n];
         }
         let mut factors = vec![];
-        while let Ok(divisor) = pollards_rho(n) {
-            while n % divisor == 0 {
-                factors.push(divisor);
-                n /= divisor;
+        let mut queue = VecDeque::from([n]);
+        while let Some(m) = queue.pop_front() {
+            if MillerRabin.is_prime(m) {
+                factors.push(m);
+                continue;
             }
-        }
-        if n > 1 {
-            factors.push(n);
+            match pollards_rho(m) {
+                FoundFactor::Prime(x) => {
+                    factors.push(x);
+                    queue.push_front(m / x)
+                }
+                FoundFactor::Composite(x) => {
+                    queue.push_front(x);
+                    queue.push_front(m / x)
+                }
+                FoundFactor::Trivial(_) => {
+                    continue;
+                }
+            }
         }
         factors.sort_unstable();
         factors
     }
 }
 
-pub fn pollards_rho(n: u128) -> Result<u128, &'static str> {
+fn pollards_rho(n: u128) -> FoundFactor {
     let init = 2;
-    let pseudorandom_sequence = |x| (x * x + 1) % n;
+    let c = rand::thread_rng().gen_range(1..n);
     let finished = |x: u128, y: u128| utils::gcd(x.abs_diff(y), n) != 1;
-    let (tortoise, hare) = utils::floyds_cycle_detection(init, pseudorandom_sequence, finished);
+    let psuedorandom = |x: u128| (x * x + c) % n;
+    let (tortoise, hare) = utils::floyds_cycle_detection(init, &psuedorandom, &finished);
     let divisor = utils::gcd(tortoise.abs_diff(hare), n);
-    if n == divisor {
-        return Err("Failed to find non-trivial factor");
+    if divisor == 1 || divisor == n {
+        FoundFactor::Trivial(divisor)
+    } else if MillerRabin.is_prime(divisor) {
+        FoundFactor::Prime(divisor)
+    } else {
+        FoundFactor::Composite(divisor)
     }
-    Ok(divisor)
 }
+
+enum FoundFactor {
+    Trivial(u128),
+    Composite(u128),
+    Prime(u128),
+}
+
+#[derive(Debug)]
+struct FailedToFindNonTrivialFactor;
 
 #[cfg(test)]
 mod tests {
