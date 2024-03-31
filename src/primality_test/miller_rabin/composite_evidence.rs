@@ -12,33 +12,34 @@ impl CompositeEvidence {
     }
 
     pub fn witnessed_by(&self, witness: u128) -> bool {
-        match self.raise_to_n_minus_1(witness) {
+        match self.raise_to_n_minus_1_mod_n(witness) {
             Ok(result) => fails_fermats_condition(result),
             Err(FoundNonTrivialSqrtOf1) => true,
         }
     }
 
-    fn raise_to_n_minus_1(&self, base: u128) -> Result<RaisedToNMinus1, FoundNonTrivialSqrtOf1> {
+    fn raise_to_n_minus_1_mod_n(&self, base: u128) -> ExponentiationResult {
         let odd_factor_in_exp = self.n_minus_1.odd_factor;
         let mut result = utils::modular_exponentiation(base, odd_factor_in_exp, self.n);
         for _ in 0..self.n_minus_1.exponent_of_2 {
             if utils::is_nontrivial_sqrt_of_1(result, self.n) {
                 return Err(FoundNonTrivialSqrtOf1);
             }
-            result = (result * result) % self.n;
+            result = utils::modular_exponentiation(result, 2, self.n);
         }
-        Ok(RaisedToNMinus1(result))
+        Ok(RaisedToNMinus1ModN(result))
     }
 }
 
-fn fails_fermats_condition(r: RaisedToNMinus1) -> bool {
+fn fails_fermats_condition(r: RaisedToNMinus1ModN) -> bool {
     r.0 != 1
 }
 
-struct RaisedToNMinus1(u128);
+type ExponentiationResult = Result<RaisedToNMinus1ModN, FoundNonTrivialSqrtOf1>;
+
+struct RaisedToNMinus1ModN(u128);
 
 struct FoundNonTrivialSqrtOf1;
-
 
 struct Decomposed {
     exponent_of_2: u32,
