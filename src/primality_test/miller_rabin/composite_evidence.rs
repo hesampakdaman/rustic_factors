@@ -1,20 +1,20 @@
 use super::utils;
 
-pub struct Witnessed {
+pub struct CompositeEvidence {
     n: u128,
     n_minus_1: Decomposed,
 }
 
-impl Witnessed {
+impl CompositeEvidence {
     pub fn new(n: u128) -> Self {
         let n_minus_1 = Decomposed::new(n - 1);
         Self { n, n_minus_1 }
     }
 
-    pub fn not_by(&self, witness_candidate: u128) -> bool {
-        match self.raise_to_n_minus_1(witness_candidate) {
-            Ok(result) => passes_fermats_condition(result),
-            Err(FoundNonTrivialSqrtOf1) => false,
+    pub fn witnessed_by(&self, witness: u128) -> bool {
+        match self.raise_to_n_minus_1(witness) {
+            Ok(result) => fails_fermats_condition(result),
+            Err(FoundNonTrivialSqrtOf1) => true,
         }
     }
 
@@ -31,8 +31,8 @@ impl Witnessed {
     }
 }
 
-fn passes_fermats_condition(r: RaisedToNMinus1) -> bool {
-    r.0 == 1
+fn fails_fermats_condition(r: RaisedToNMinus1) -> bool {
+    r.0 != 1
 }
 
 struct RaisedToNMinus1(u128);

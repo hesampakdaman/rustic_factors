@@ -1,14 +1,14 @@
+mod composite_evidence;
 mod utils;
-mod witnessed;
 
 use crate::traits::PrimalityTest;
-use witnessed::Witnessed;
+use self::composite_evidence::CompositeEvidence;
 
 pub struct MillerRabin;
 
 impl PrimalityTest for MillerRabin {
     fn is_prime(&self, p: u128) -> bool {
-        if p == 2 {
+        if p == 2 || p == 3 {
             return true;
         }
         if p < 2 || p % 2 == 0 {
@@ -19,10 +19,11 @@ impl PrimalityTest for MillerRabin {
 }
 
 fn miller_rabin(p: u128, trials: usize) -> bool {
-    let witnessed = Witnessed::new(p);
-    utils::RandomIntegers::new(1..p)
+    let evidence = CompositeEvidence::new(p);
+    let likely_prime = |witness| !evidence.witnessed_by(witness);
+    utils::RandomIntegers::new(2..p-1)
         .take(trials)
-        .all(|randint| witnessed.not_by(randint))
+        .all(likely_prime)
 }
 
 #[cfg(test)]
