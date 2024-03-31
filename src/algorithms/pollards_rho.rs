@@ -5,7 +5,7 @@ pub struct PollardsRho;
 
 impl Factorize for PollardsRho {
     fn factorize(&self, mut n: u128) -> Vec<u128> {
-        if n <= 1 {
+        if n <= 3 {
             return vec![n];
         }
         let mut factors = vec![];
@@ -26,9 +26,9 @@ impl Factorize for PollardsRho {
 pub fn pollards_rho(n: u128) -> Result<u128, &'static str> {
     let init = 2;
     let pseudorandom_sequence = |x| (x * x + 1) % n;
-    let finished = |x, y| utils::gcd(u128::abs_diff(x, y), n) != 1;
+    let finished = |x: u128, y: u128| utils::gcd(x.abs_diff(y), n) != 1;
     let (tortoise, hare) = utils::floyds_cycle_detection(init, pseudorandom_sequence, finished);
-    let divisor = utils::gcd(u128::abs_diff(tortoise, hare), n);
+    let divisor = utils::gcd(tortoise.abs_diff(hare), n);
     if n == divisor {
         return Err("Failed to find non-trivial factor");
     }
