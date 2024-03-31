@@ -13,7 +13,7 @@ impl Factorize for TrialDivision {
 
 fn trial_div(mut n: u128) -> Vec<u128> {
     let mut factors = vec![];
-    let mut div = Divisor::new();
+    let mut div = DivisorCandidates::new();
     while div.square() <= n {
         while div.divides(n) {
             factors.push(div.value());
@@ -31,11 +31,11 @@ fn is_still_undivided(n: u128) -> bool {
     n > 1
 }
 
-struct Divisor(u128);
+struct DivisorCandidates(u128);
 
-impl Divisor {
+impl DivisorCandidates {
     fn new() -> Self {
-        Divisor(2)
+        DivisorCandidates(2)
     }
 
     fn next(&mut self) -> &mut Self {
