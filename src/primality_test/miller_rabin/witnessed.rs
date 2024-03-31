@@ -1,31 +1,31 @@
 use super::utils;
 
 pub struct Witnessed {
-    number: u128,
+    n: u128,
     n_minus_1: Decomposed,
 }
 
 impl Witnessed {
-    pub fn new(number: u128) -> Self {
-        let n_minus_1 = Decomposed::new(number - 1);
-        Self { number, n_minus_1 }
+    pub fn new(n: u128) -> Self {
+        let n_minus_1 = Decomposed::new(n - 1);
+        Self { n, n_minus_1 }
     }
 
     pub fn not_by(&self, witness_candidate: u128) -> bool {
         match self.raise_to_n_minus_1(witness_candidate) {
             Ok(result) => passes_fermats_condition(result),
-            Err(ExponentiationErr::FoundNonTrivialSqrtOf1) => false,
+            Err(FoundNonTrivialSqrtOf1) => false,
         }
     }
 
-    fn raise_to_n_minus_1(&self, base: u128) -> Result<RaisedToNMinus1, ExponentiationErr> {
+    fn raise_to_n_minus_1(&self, base: u128) -> Result<RaisedToNMinus1, FoundNonTrivialSqrtOf1> {
         let odd_factor_in_exp = self.n_minus_1.odd_factor;
-        let mut result = utils::modular_exponentiation(base, odd_factor_in_exp, self.number);
+        let mut result = utils::modular_exponentiation(base, odd_factor_in_exp, self.n);
         for _ in 0..self.n_minus_1.exponent_of_2 {
-            if utils::is_nontrivial_sqrt_of_1(result, self.number) {
-                return Err(ExponentiationErr::FoundNonTrivialSqrtOf1);
+            if utils::is_nontrivial_sqrt_of_1(result, self.n) {
+                return Err(FoundNonTrivialSqrtOf1);
             }
-            result = (result * result) % self.number;
+            result = (result * result) % self.n;
         }
         Ok(RaisedToNMinus1(result))
     }
@@ -37,9 +37,8 @@ fn passes_fermats_condition(r: RaisedToNMinus1) -> bool {
 
 struct RaisedToNMinus1(u128);
 
-enum ExponentiationErr {
-    FoundNonTrivialSqrtOf1,
-}
+struct FoundNonTrivialSqrtOf1;
+
 
 struct Decomposed {
     exponent_of_2: u32,
