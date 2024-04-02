@@ -1,6 +1,4 @@
-use rand::Rng;
 mod utils;
-use std::ops::Range;
 
 use crate::primality_test::MillerRabin;
 use crate::traits::PrimalityTest;
@@ -10,9 +8,6 @@ pub struct PollardsRho;
 
 impl Factorize for PollardsRho {
     fn factorize(&self, mut n: u128) -> Vec<u128> {
-        if n <= 1 || MillerRabin.is_prime(n) {
-            return vec![n];
-        }
         let mut factors = vec![];
         while n % 2 == 0 {
             factors.push(2);
@@ -27,30 +22,38 @@ fn iter_pollards_rho(n: u128, factors: &mut Vec<u128>) {
     if n <= 1 {
         return;
     }
-    if MillerRabin.is_prime(n) {
-        factors.push(n);
-        return;
+    match pollards_rho(n) {
+        DivisorOfN::Trivial(_) => iter_pollards_rho(n, factors),
+        DivisorOfN::Prime(p) => {
+            factors.push(p);
+            iter_pollards_rho(n / p, factors)
+        }
+        DivisorOfN::Composite(d) => {
+            iter_pollards_rho(n / d, factors);
+            iter_pollards_rho(d, factors);
+        }
     }
-    let divisior_of_n = pollards_rho(n);
-    iter_pollards_rho(n / divisior_of_n, factors);
-    iter_pollards_rho(divisior_of_n, factors);
 }
 
-fn pollards_rho(n: u128) -> u128 {
+fn pollards_rho(n: u128) -> DivisorOfN {
     let init = 2;
-    let psudorandom_fn = generate_psudeorandom_fn(n);
+    let psudorandom_fn = utils::generate_psudeorandom_fn(n);
     let finished = |x: u128, y: u128| utils::gcd(x.abs_diff(y), n) != 1;
     let (tortoise, hare) = utils::floyds_cycle_detection(init, &psudorandom_fn, &finished);
-    utils::gcd(tortoise.abs_diff(hare), n)
+    let d = utils::gcd(tortoise.abs_diff(hare), n);
+    if MillerRabin.is_prime(d) {
+        return DivisorOfN::Prime(d);
+    }
+    if d == 1 || d == n {
+        return DivisorOfN::Trivial(d);
+    }
+    DivisorOfN::Composite(d)
 }
 
-fn generate_psudeorandom_fn(n: u128) -> impl Fn(u128) -> u128 {
-    let c = random_integer(1..n);
-    move |x| (x * x + c) % n
-}
-
-fn random_integer(r: Range<u128>) -> u128 {
-    rand::thread_rng().gen_range(r)
+enum DivisorOfN {
+    Prime(u128),
+    Composite(u128),
+    Trivial(u128),
 }
 
 #[cfg(test)]
