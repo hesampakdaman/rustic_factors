@@ -7,30 +7,45 @@ use crate::Factorize;
 pub struct PollardsRho;
 
 impl Factorize for PollardsRho {
-    fn factorize(&self, mut n: u128) -> Vec<u128> {
+    fn factorize(&self, n: u128) -> Vec<u128> {
+        RecursivePollardsRho::new(n).solve().factors
+    }
+}
+
+struct RecursivePollardsRho {
+    n: u128,
+    factors: Vec<u128>,
+}
+
+impl RecursivePollardsRho {
+    fn new(mut n: u128) -> Self {
         let mut factors = vec![];
         while n % 2 == 0 {
             factors.push(2);
             n /= 2;
         }
-        iter_pollards_rho(n, &mut factors);
-        factors
+        Self { n, factors }
     }
-}
 
-fn iter_pollards_rho(n: u128, factors: &mut Vec<u128>) {
-    if n <= 1 {
-        return;
+    fn solve(mut self) -> Self {
+        self.iter_pollars_rho(self.n);
+        self
     }
-    match pollards_rho(n) {
-        DivisorOfN::Trivial(_) => iter_pollards_rho(n, factors),
-        DivisorOfN::Prime(p) => {
-            factors.push(p);
-            iter_pollards_rho(n / p, factors)
+
+    fn iter_pollars_rho(&mut self, n: u128) {
+        if n <= 1 {
+            return;
         }
-        DivisorOfN::Composite(d) => {
-            iter_pollards_rho(n / d, factors);
-            iter_pollards_rho(d, factors);
+        match pollards_rho(n) {
+            DivisorOfN::Trivial(_) => self.iter_pollars_rho(n),
+            DivisorOfN::Prime(p) => {
+                self.factors.push(p);
+                self.iter_pollars_rho(n / p)
+            }
+            DivisorOfN::Composite(d) => {
+                self.iter_pollars_rho(n / d);
+                self.iter_pollars_rho(d);
+            }
         }
     }
 }
