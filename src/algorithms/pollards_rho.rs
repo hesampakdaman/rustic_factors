@@ -47,7 +47,6 @@ impl Factorize for PollardsRho {
                 }
             }
         }
-        factors.sort_unstable();
         factors
     }
 }
@@ -89,9 +88,21 @@ mod tests {
     use super::*;
 
     #[test]
-    fn simple() {
-        assert_eq!(PollardsRho.factorize(8051), vec![83, 97]);
-        assert_eq!(PollardsRho.factorize(2u128.pow(10)), vec![2; 10]);
-        assert_eq!(PollardsRho.factorize(15), vec![3, 5]);
+    fn composites() {
+        let test_cases = [(8051, vec![83, 97]), (15, vec![3, 5]), (4096, vec![2; 12])];
+        for (n, expected) in test_cases {
+            let mut actual = PollardsRho.factorize(n);
+            actual.sort_unstable();
+            assert_eq!(actual, expected);
+        }
+    }
+
+    #[test]
+    fn primes() {
+        let primes = [3, 5, 19, 29, 37, 7027, 13037];
+        for p in primes {
+            let actual = PollardsRho.factorize(p);
+            assert_eq!(actual, vec![p]);
+        }
     }
 }
