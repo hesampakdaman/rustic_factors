@@ -1,68 +1,80 @@
 mod utils;
 
-use crate::primality_test::MillerRabin;
+use crate::primality_test;
 use crate::traits::PrimalityTest;
 use crate::Factorize;
 
 pub struct PollardsRho;
+type PrimeTester = Box<dyn PrimalityTest>;
 
 impl Factorize for PollardsRho {
     fn factorize(&self, n: u128) -> Vec<u128> {
-        RecursivePollardsRho::new(n).solve().factors
+        RecursivePollardsRho::new(n, Box::new(primality_test::MillerRabin))
+            .solve()
+            .factors
     }
 }
 
 struct RecursivePollardsRho {
     n: u128,
     factors: Vec<u128>,
+    prime_tester: PrimeTester,
 }
 
 impl RecursivePollardsRho {
-    fn new(mut n: u128) -> Self {
+    fn new(mut n: u128, prime_tester: PrimeTester) -> Self {
         let mut factors = vec![];
         while n % 2 == 0 {
             factors.push(2);
             n /= 2;
         }
-        Self { n, factors }
+        Self {
+            n,
+            factors,
+            prime_tester,
+        }
     }
 
     fn solve(mut self) -> Self {
-        self.iter_pollars_rho(self.n);
+        self.recursively_factorize_n(self.n);
         self
     }
 
-    fn iter_pollars_rho(&mut self, n: u128) {
+    fn recursively_factorize_n(&mut self, n: u128) {
         if n <= 1 {
             return;
         }
-        match pollards_rho(n) {
-            DivisorOfN::Trivial(_) => self.iter_pollars_rho(n),
+        match self.get_divisor_with_pollards_rho(n) {
+            DivisorOfN::Trivial(_) => self.recursively_factorize_n(n),
             DivisorOfN::Prime(p) => {
                 self.factors.push(p);
-                self.iter_pollars_rho(n / p)
+                self.recursively_factorize_n(n / p)
             }
             DivisorOfN::Composite(d) => {
-                self.iter_pollars_rho(n / d);
-                self.iter_pollars_rho(d);
+                self.recursively_factorize_n(n / d);
+                self.recursively_factorize_n(d);
             }
         }
     }
+
+    fn get_divisor_with_pollards_rho(&self, n: u128) -> DivisorOfN {
+        let d = pollards_rho(n);
+        if self.prime_tester.is_prime(d) {
+            return DivisorOfN::Prime(d);
+        }
+        if d == 1 || d == n {
+            return DivisorOfN::Trivial(d);
+        }
+        DivisorOfN::Composite(d)
+    }
 }
 
-fn pollards_rho(n: u128) -> DivisorOfN {
+fn pollards_rho(n: u128) -> u128 {
     let init = 2;
     let psudorandom_fn = utils::generate_psudeorandom_fn(n);
     let finished = |x: u128, y: u128| utils::gcd(x.abs_diff(y), n) != 1;
     let (tortoise, hare) = utils::floyds_cycle_detection(init, &psudorandom_fn, &finished);
-    let d = utils::gcd(tortoise.abs_diff(hare), n);
-    if MillerRabin.is_prime(d) {
-        return DivisorOfN::Prime(d);
-    }
-    if d == 1 || d == n {
-        return DivisorOfN::Trivial(d);
-    }
-    DivisorOfN::Composite(d)
+    utils::gcd(tortoise.abs_diff(hare), n)
 }
 
 enum DivisorOfN {
