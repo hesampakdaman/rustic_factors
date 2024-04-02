@@ -1,6 +1,5 @@
 use rand::Rng;
 mod utils;
-use std::collections::VecDeque;
 use std::ops::Range;
 
 use crate::primality_test::MillerRabin;
@@ -11,7 +10,7 @@ pub struct PollardsRho;
 
 impl Factorize for PollardsRho {
     fn factorize(&self, mut n: u128) -> Vec<u128> {
-        if n <= 3 || MillerRabin.is_prime(n) {
+        if n <= 1 || MillerRabin.is_prime(n) {
             return vec![n];
         }
         let mut factors = vec![];
@@ -19,36 +18,30 @@ impl Factorize for PollardsRho {
             factors.push(2);
             n /= 2;
         }
-        if n <= 1 {
-            return factors;
-        }
-        let mut queue = VecDeque::from([n]);
-        let mut f = generate_psudeorandom_fn(n);
-        while let Some(m) = queue.pop_front() {
-            if m <= 1 {
-                continue;
-            }
-            if MillerRabin.is_prime(m) {
-                factors.push(m);
-                continue;
-            }
-            match pollards_rho(m, &f) {
-                FoundFactor::Prime(x) => {
-                    factors.push(x);
-                    queue.push_front(m / x)
-                }
-                FoundFactor::Composite(x) => {
-                    queue.push_front(x);
-                    queue.push_front(m / x)
-                }
-                FoundFactor::Trivial(x) => {
-                    queue.push_front(x);
-                    f = generate_psudeorandom_fn(n);
-                }
-            }
-        }
+        iter_pollards_rho(n, &mut factors);
         factors
     }
+}
+
+fn iter_pollards_rho(n: u128, factors: &mut Vec<u128>) {
+    if n <= 1 {
+        return;
+    }
+    if MillerRabin.is_prime(n) {
+        factors.push(n);
+        return;
+    }
+    let divisior_of_n = pollards_rho(n);
+    iter_pollards_rho(n / divisior_of_n, factors);
+    iter_pollards_rho(divisior_of_n, factors);
+}
+
+fn pollards_rho(n: u128) -> u128 {
+    let init = 2;
+    let psudorandom_fn = generate_psudeorandom_fn(n);
+    let finished = |x: u128, y: u128| utils::gcd(x.abs_diff(y), n) != 1;
+    let (tortoise, hare) = utils::floyds_cycle_detection(init, &psudorandom_fn, &finished);
+    utils::gcd(tortoise.abs_diff(hare), n)
 }
 
 fn generate_psudeorandom_fn(n: u128) -> impl Fn(u128) -> u128 {
@@ -59,29 +52,6 @@ fn generate_psudeorandom_fn(n: u128) -> impl Fn(u128) -> u128 {
 fn random_integer(r: Range<u128>) -> u128 {
     rand::thread_rng().gen_range(r)
 }
-
-fn pollards_rho(n: u128, psudorandom_fn: impl Fn(u128) -> u128) -> FoundFactor {
-    let init = 2;
-    let finished = |x: u128, y: u128| utils::gcd(x.abs_diff(y), n) != 1;
-    let (tortoise, hare) = utils::floyds_cycle_detection(init, &psudorandom_fn, &finished);
-    let divisor = utils::gcd(tortoise.abs_diff(hare), n);
-    if divisor == 1 || divisor == n {
-        FoundFactor::Trivial(divisor)
-    } else if MillerRabin.is_prime(divisor) {
-        FoundFactor::Prime(divisor)
-    } else {
-        FoundFactor::Composite(divisor)
-    }
-}
-
-enum FoundFactor {
-    Trivial(u128),
-    Composite(u128),
-    Prime(u128),
-}
-
-#[derive(Debug)]
-struct FailedToFindNonTrivialFactor;
 
 #[cfg(test)]
 mod tests {
