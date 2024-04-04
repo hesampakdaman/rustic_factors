@@ -1,28 +1,29 @@
 mod utils;
 
+use std::marker::PhantomData;
+
 use crate::primality_test;
 use crate::traits::PrimalityTest;
-use crate::Factorize;
+use crate::PrimeFactorization;
 
 pub struct PollardsRho;
-type PrimeTester = Box<dyn PrimalityTest>;
 
-impl Factorize for PollardsRho {
-    fn factorize(&self, n: u128) -> Vec<u128> {
-        RecursivePollardsRho::new(n, Box::new(primality_test::MillerRabin))
+impl PrimeFactorization for PollardsRho {
+    fn prime_factorization(n: u128) -> Vec<u128> {
+        RecursivePollardsRho::<primality_test::MillerRabin>::new(n)
             .solve()
             .factors
     }
 }
 
-struct RecursivePollardsRho {
+struct RecursivePollardsRho<P: PrimalityTest> {
     n: u128,
     factors: Vec<u128>,
-    prime_tester: PrimeTester,
+    prime_tester: PhantomData<P>,
 }
 
-impl RecursivePollardsRho {
-    fn new(mut n: u128, prime_tester: PrimeTester) -> Self {
+impl<P: PrimalityTest> RecursivePollardsRho<P> {
+    fn new(mut n: u128) -> Self {
         let mut factors = vec![];
         while n % 2 == 0 {
             factors.push(2);
@@ -31,7 +32,7 @@ impl RecursivePollardsRho {
         Self {
             n,
             factors,
-            prime_tester,
+            prime_tester: PhantomData,
         }
     }
 
@@ -59,7 +60,7 @@ impl RecursivePollardsRho {
 
     fn get_divisor_with_pollards_rho(&self, n: u128) -> DivisorOfN {
         let d = pollards_rho(n);
-        if self.prime_tester.is_prime(d) {
+        if P::is_prime(d) {
             return DivisorOfN::Prime(d);
         }
         if d == 1 || d == n {
@@ -91,7 +92,7 @@ mod tests {
     fn composites() {
         let test_cases = [(8051, vec![83, 97]), (15, vec![3, 5]), (4096, vec![2; 12])];
         for (n, expected) in test_cases {
-            let mut actual = PollardsRho.factorize(n);
+            let mut actual = PollardsRho::prime_factorization(n);
             actual.sort_unstable();
             assert_eq!(actual, expected);
         }
@@ -101,7 +102,7 @@ mod tests {
     fn primes() {
         let primes = [3, 5, 19, 29, 37, 7027, 13037];
         for p in primes {
-            let actual = PollardsRho.factorize(p);
+            let actual = PollardsRho::prime_factorization(p);
             assert_eq!(actual, vec![p]);
         }
     }
