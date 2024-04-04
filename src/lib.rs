@@ -4,4 +4,4 @@ pub mod traits;
 pub mod primality_test;
 
 pub use factorization::Factorization;
-pub use traits::Factorize;
+pub use traits::PrimeFactorization;

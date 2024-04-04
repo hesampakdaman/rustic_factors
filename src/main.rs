@@ -13,8 +13,8 @@ fn main() {
         .parse()
         .expect("Please provide a valid positive integer");
     match method.as_str() {
-        "pollards_rho" => println!("{}", Factorization::new(n, algorithms::PollardsRho)),
-        "trial_division" => println!("{}", Factorization::new(n, algorithms::TrialDivision)),
+        "pollards_rho" => println!("{}", Factorization::new::<algorithms::PollardsRho>(n)),
+        "trial_division" => println!("{}", Factorization::new::<algorithms::TrialDivision>(n)),
         _ => eprintln!("Unknown algorithm. Available options: pollards_rho, trial_division"),
     }
 }

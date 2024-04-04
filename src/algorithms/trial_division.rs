@@ -1,9 +1,9 @@
-use crate::Factorize;
+use crate::PrimeFactorization;
 
 pub struct TrialDivision;
 
-impl Factorize for TrialDivision {
-    fn factorize(&self, n: u128) -> Vec<u128> {
+impl PrimeFactorization for TrialDivision {
+    fn prime_factorization(n: u128) -> Vec<u128> {
         if n <= 1 {
             return vec![n];
         }
@@ -62,11 +62,11 @@ mod tests {
 
     #[test]
     fn factorize_prime() {
-        assert_eq!(TrialDivision.factorize(13), vec![13]);
+        assert_eq!(TrialDivision::prime_factorization(13), vec![13]);
     }
 
     #[test]
     fn factorize_composite() {
-        assert_eq!(TrialDivision.factorize(12), vec![2, 2, 3]);
+        assert_eq!(TrialDivision::prime_factorization(12), vec![2, 2, 3]);
     }
 }

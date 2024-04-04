@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 use std::fmt;
 
-use crate::Factorize;
+use crate::PrimeFactorization;
 
 static SUPERSCRIPTS: [&str; 10] = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"];
 
@@ -11,10 +11,10 @@ pub struct Factorization {
 }
 
 impl Factorization {
-    pub fn new(n: u128, f: impl Factorize) -> Self {
+    pub fn new<F: PrimeFactorization>(n: u128) -> Self {
         Factorization {
             number: n,
-            factors: f.factorize(n),
+            factors: F::prime_factorization(n),
         }
     }
 

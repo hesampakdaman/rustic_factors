@@ -1,13 +1,13 @@
 mod composite_evidence;
 mod utils;
 
-use crate::traits::PrimalityTest;
 use self::composite_evidence::CompositeEvidence;
+use crate::traits::PrimalityTest;
 
 pub struct MillerRabin;
 
 impl PrimalityTest for MillerRabin {
-    fn is_prime(&self, p: u128) -> bool {
+    fn is_prime(p: u128) -> bool {
         if p == 2 || p == 3 {
             return true;
         }
@@ -21,7 +21,7 @@ impl PrimalityTest for MillerRabin {
 fn miller_rabin(p: u128, trials: usize) -> bool {
     let evidence = CompositeEvidence::new(p);
     let likely_prime = |witness| !evidence.witnessed_by(witness);
-    utils::RandomIntegers::new(2..p-1)
+    utils::RandomIntegers::new(2..p - 1)
         .take(trials)
         .all(likely_prime)
 }
@@ -43,7 +43,7 @@ mod tests {
             2u128.pow(61) - 1,
         ];
         for prime in primes {
-            assert!(MillerRabin.is_prime(prime), "Failed on prime {prime}");
+            assert!(MillerRabin::is_prime(prime), "Failed on prime {prime}");
         }
     }
 
@@ -51,7 +51,7 @@ mod tests {
     fn test_composite_numbers() {
         for composite in [4, 15, 35, 49, 1001] {
             assert!(
-                !MillerRabin.is_prime(composite),
+                !MillerRabin::is_prime(composite),
                 "Failed on composite {composite}"
             );
         }
@@ -66,7 +66,7 @@ mod tests {
         ];
         for carmichael in carmichaels {
             assert!(
-                !MillerRabin.is_prime(carmichael),
+                !MillerRabin::is_prime(carmichael),
                 "Failed on Carmichael number {carmichael}"
             );
         }
