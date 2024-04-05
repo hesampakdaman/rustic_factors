@@ -1,52 +1,35 @@
-use rand::Rng;
+use num_bigint::{BigUint, RandBigInt};
+use num_integer::Integer;
 use std::ops::Range;
 
 pub struct RandomIntegers {
-    range: Range<u128>,
+    lo: BigUint,
+    hi: BigUint,
 }
 
 impl RandomIntegers {
-    pub fn new(range: Range<u128>) -> Self {
-        Self { range }
+    pub fn new(range: Range<BigUint>) -> Self {
+        Self {
+            lo: range.start,
+            hi: range.end,
+        }
     }
 }
 
 impl Iterator for RandomIntegers {
-    type Item = u128;
+    type Item = BigUint;
 
     fn next(&mut self) -> Option<Self::Item> {
-        Some(rand::thread_rng().gen_range(self.range.clone()))
+        Some(rand::thread_rng().gen_biguint_range(&self.lo, &self.hi))
     }
 }
 
-pub fn modular_exponentiation(base: u128, exp: u128, modulus: u128) -> u128 {
-    if modulus == 1 {
-        return 0;
-    }
-    let mut base = base % modulus;
-    let mut exp = exp;
-    let mut result = 1;
-    while exp > 0 {
-        if exp % 2 == 1 {
-            result = (result * base) % modulus; // If the exponent is odd, multiply the result by the base
-        }
-        exp >>= 1; // (divide by 2, dropping any remainder)
-        base = (base * base) % modulus;
-    }
-    result
-}
-
-pub fn highest_power_of_2_divisor(base: u128) -> u32 {
+pub fn highest_power_of_2_divisor(base: &BigUint) -> u32 {
     let mut exp = 0;
-    let mut base = base;
-    while base % 2 == 0 {
+    let mut base = base.clone();
+    while base.is_even() {
         exp += 1;
-        base /= 2;
+        base /= 2u8;
     }
     exp
-}
-
-pub fn is_nontrivial_sqrt_of_1(solution: u128, number: u128) -> bool {
-    let squared = (solution * solution) % number;
-    squared == 1 && solution != 1 && solution != number - 1
 }
