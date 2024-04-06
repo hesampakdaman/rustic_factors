@@ -3,27 +3,27 @@ use rustic_factors::Factorization;
 use std::env;
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
-    if args.len() < 3 {
-        eprintln!("Usage: {} <algorithm> <number>", args[0]);
-        std::process::exit(1);
-    }
-    let method = &args[1];
-    let n: u128 = args[2]
-        .parse()
-        .expect("Please provide a valid positive integer");
-    if let Err(msg) = run(method, n) {
+    if let Err(msg) = run(env::args().collect()) {
         eprintln!("{msg}");
         std::process::exit(1)
     }
 }
 
-fn run(method: &str, n: u128) -> Result<(), &str> {
-    match method {
+fn run(args: Vec<String>) -> Result<(), String> {
+    if args.len() < 3 {
+        return Err(format!("Usage: {} <algorithm> <number>", args[0]));
+    }
+    let method = &args[1];
+    let n: u128 = args[2]
+        .parse()
+        .map_err(|_| String::from("Please provide a valid positive integer"))?;
+    match method.as_str() {
         "pollards_rho" => println!("{}", Factorization::new::<algorithms::PollardsRho>(n)),
         "trial_division" => println!("{}", Factorization::new::<algorithms::TrialDivision>(n)),
         _ => {
-            return Err("Unknown algorithm. Available options: pollards_rho, trial_division");
+            return Err(String::from(
+                "Unknown algorithm. Available options: pollards_rho, trial_division",
+            ));
         }
     };
     Ok(())
@@ -34,20 +34,35 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_pollards_rho() {
-        assert!(run("pollards_rho", 123).is_ok());
+    fn pollards_rho() {
+        assert!(run(vec![
+            String::from("rustic_factors"),
+            String::from("pollards_rho"),
+            String::from("123")
+        ])
+        .is_ok());
     }
 
     #[test]
-    fn test_trial_division() {
-        assert!(run("trial_division", 123).is_ok());
+    fn trial_division() {
+        assert!(run(vec![
+            String::from("rustic_factors"),
+            String::from("trial_division"),
+            String::from("123")
+        ])
+        .is_ok());
     }
 
     #[test]
-    fn test_unknown_method() {
+    fn unknown_method() {
         assert_eq!(
-            run("unknown_method", 123).unwrap_err(),
-            "Unknown algorithm. Available options: pollards_rho, trial_division"
+            run(vec![
+                String::from("rustic_factors"),
+                String::from("unknown_method"),
+                String::from("123")
+            ])
+            .unwrap_err(),
+            String::from("Unknown algorithm. Available options: pollards_rho, trial_division")
         );
     }
 }
