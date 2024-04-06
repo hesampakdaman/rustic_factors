@@ -34,23 +34,23 @@ mod tests {
     use super::*;
 
     #[test]
-    fn pollards_rho() {
-        assert!(run(vec![
-            String::from("rustic_factors"),
-            String::from("pollards_rho"),
-            String::from("123")
-        ])
-        .is_ok());
+    fn happy_cases() {
+        for method in ["pollards_rho", "trial_division"] {
+            assert!(run(vec![
+                String::from("rustic_factors"),
+                String::from(method),
+                String::from("123")
+            ])
+            .is_ok());
+        }
     }
 
     #[test]
-    fn trial_division() {
-        assert!(run(vec![
-            String::from("rustic_factors"),
-            String::from("trial_division"),
-            String::from("123")
-        ])
-        .is_ok());
+    fn too_few_args() {
+        assert_eq!(
+            run(vec![String::from("rustic_factors")]).unwrap_err(),
+            String::from("Usage: rustic_factors <algorithm> <number>")
+        );
     }
 
     #[test]
