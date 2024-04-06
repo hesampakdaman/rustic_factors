@@ -1,4 +1,7 @@
 use crate::PrimeFactorization;
+use num_bigint::BigUint;
+use num_integer::Integer;
+use num_traits::One;
 
 pub struct TrialDivision;
 
@@ -7,52 +10,58 @@ impl PrimeFactorization for TrialDivision {
         if n <= 1 {
             return vec![n];
         }
-        trial_div(n)
+        trial_div(BigUint::from(n))
+            .into_iter()
+            .map(|d| d.try_into().unwrap())
+            .collect()
     }
 }
 
-fn trial_div(mut n: u128) -> Vec<u128> {
+fn trial_div(mut n: BigUint) -> Vec<BigUint> {
     let mut factors = vec![];
-    let mut div = DivisorCandidates::new();
-    while div.square() <= n {
-        while div.divides(n) {
-            factors.push(div.value());
-            n /= div.value();
+    let mut divisors = DivisorCandidates::new();
+    while let Some(d) = divisors.next() {
+        if n < d.pow(2) {
+            break;
         }
-        div.next();
+        while n.is_multiple_of(&d) {
+            n /= &d;
+            factors.push(d.clone());
+        }
     }
-    if is_still_undivided(n) {
+    if is_still_undivided(&n) {
         factors.push(n);
     }
     factors
 }
 
-fn is_still_undivided(n: u128) -> bool {
-    n > 1
+fn is_still_undivided(n: &BigUint) -> bool {
+    !n.is_one()
 }
 
-struct DivisorCandidates(u128);
+struct DivisorCandidates {
+    current: BigUint,
+}
 
 impl DivisorCandidates {
     fn new() -> Self {
-        DivisorCandidates(2)
+        DivisorCandidates {
+            current: BigUint::from(2u8),
+        }
     }
+}
 
-    fn next(&mut self) -> &mut Self {
-        self.0 += if self.0 == 2 { 1 } else { 2 };
-        self
-    }
+impl Iterator for DivisorCandidates {
+    type Item = BigUint;
 
-    fn value(&self) -> u128 {
-        self.0
-    }
-
-    fn square(&self) -> u128 {
-        self.0 * self.0
-    }
-
-    fn divides(&self, n: u128) -> bool {
-        n % self.0 == 0
+    fn next(&mut self) -> Option<Self::Item> {
+        let output = self.current.clone();
+        self.current = if self.current == BigUint::from(2u8) {
+            &self.current + 1u8
+        } else {
+            &self.current + 2u8
+        };
+        Some(output)
     }
 }
 
