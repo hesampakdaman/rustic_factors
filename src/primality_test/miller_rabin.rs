@@ -3,6 +3,7 @@ mod utils;
 
 use self::composite_evidence::CompositeEvidence;
 use crate::traits::PrimalityTest;
+use num_bigint::BigUint;
 
 pub struct MillerRabin;
 
@@ -14,14 +15,14 @@ impl PrimalityTest for MillerRabin {
         if p < 2 || p % 2 == 0 {
             return false;
         }
-        miller_rabin(p, 10)
+        miller_rabin(&BigUint::from(p), 10)
     }
 }
 
-fn miller_rabin(p: u128, trials: usize) -> bool {
+fn miller_rabin(p: &BigUint, trials: usize) -> bool {
     let evidence = CompositeEvidence::new(p);
-    let likely_prime = |witness| !evidence.witnessed_by(witness);
-    utils::RandomIntegers::new(2..p - 1)
+    let likely_prime = |witness| !evidence.witnessed_by(&witness);
+    utils::RandomIntegers::new(BigUint::from(2u8)..p - 1u8)
         .take(trials)
         .all(likely_prime)
 }
