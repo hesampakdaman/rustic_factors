@@ -4,16 +4,20 @@ use crate::orchestration;
 use crate::primality_test::MillerRabin;
 use crate::traits::Factorize;
 use crate::PrimeFactorization;
+use num_bigint::BigInt;
+use num_integer::Integer;
+use num_traits::{One, Signed};
 
 pub struct PollardsRho;
 
 impl Factorize for PollardsRho {
     fn factorize(n: u128) -> u128 {
-        let init = 2;
-        let psudorandom_fn = utils::generate_psudeorandom_fn(n);
-        let finished = |x: u128, y: u128| utils::gcd(x.abs_diff(y), n) != 1;
+        let n = BigInt::from(n);
+        let init = BigInt::from(2);
+        let psudorandom_fn = utils::generate_pseudorandom_fn(&n);
+        let finished = |x: &BigInt, y: &BigInt| (x - y).abs().gcd(&n) != BigInt::one();
         let (tortoise, hare) = utils::floyds_cycle_detection(init, &psudorandom_fn, &finished);
-        utils::gcd(tortoise.abs_diff(hare), n)
+        (hare - tortoise).abs().gcd(&n).try_into().unwrap()
     }
 }
 
