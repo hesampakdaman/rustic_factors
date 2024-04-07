@@ -16,7 +16,8 @@ where
 }
 
 pub fn generate_pseudorandom_fn(n: &'_ BigInt) -> impl Fn(&BigInt) -> BigInt + '_ {
-    move |x| (x.pow(2) + random_integer(n)) % n
+    let c = random_integer(&n);
+    move |x| (x.pow(2) + &c) % n
 }
 
 fn random_integer(bound: &BigInt) -> BigInt {

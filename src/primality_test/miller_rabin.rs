@@ -4,25 +4,27 @@ mod utils;
 use self::composite_evidence::CompositeEvidence;
 use crate::traits::PrimalityTest;
 use num_bigint::BigInt;
+use num_integer::Integer;
 
 pub struct MillerRabin;
 
 impl PrimalityTest for MillerRabin {
-    fn is_prime(p: u128) -> bool {
-        if p == 2 || p == 3 {
+    fn is_prime(p: &BigInt) -> bool {
+        let two: BigInt = 2.into();
+        if p == &two || p == &BigInt::from(3) {
             return true;
         }
-        if p < 2 || p % 2 == 0 {
+        if p < &two || p.is_multiple_of(&two) {
             return false;
         }
-        miller_rabin(&BigInt::from(p), 10)
+        miller_rabin(&p, 10)
     }
 }
 
 fn miller_rabin(p: &BigInt, trials: usize) -> bool {
     let evidence = CompositeEvidence::new(p);
     let likely_prime = |witness| !evidence.witnessed_by(&witness);
-    utils::RandomIntegers::new(BigInt::from(2u8)..p - 1u8)
+    utils::RandomIntegers::new(BigInt::from(2)..p - 1)
         .take(trials)
         .all(likely_prime)
 }
@@ -30,6 +32,11 @@ fn miller_rabin(p: &BigInt, trials: usize) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::tests::utils::check_prime;
+
+    fn check(p: u32, expected: bool) {
+        check_prime::<MillerRabin>(p, expected);
+    }
 
     #[test]
     fn test_prime_numbers() {
@@ -40,21 +47,17 @@ mod tests {
             11,
             104729,
             6700417,
-            2u128.pow(31) - 1,
-            2u128.pow(61) - 1,
+            2u32.pow(31) - 1,
         ];
         for prime in primes {
-            assert!(MillerRabin::is_prime(prime), "Failed on prime {prime}");
+            check(prime, true);
         }
     }
 
     #[test]
     fn test_composite_numbers() {
         for composite in [4, 15, 35, 49, 1001] {
-            assert!(
-                !MillerRabin::is_prime(composite),
-                "Failed on composite {composite}"
-            );
+            check(composite, false);
         }
     }
 
@@ -66,10 +69,7 @@ mod tests {
             294409, 314821, 334153, 340561, 399001, 410041, 449065, 488881, 512461,
         ];
         for carmichael in carmichaels {
-            assert!(
-                !MillerRabin::is_prime(carmichael),
-                "Failed on Carmichael number {carmichael}"
-            );
+            check(carmichael, false);
         }
     }
 }

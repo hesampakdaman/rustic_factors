@@ -1,5 +1,8 @@
+use num_bigint::BigInt;
 use rustic_factors::algorithms;
 use rustic_factors::Factorization;
+use rustic_factors::primality_test::MillerRabin;
+use rustic_factors::traits::PrimalityTest;
 use std::env;
 
 fn main() {
@@ -14,12 +17,13 @@ fn run(args: Vec<String>) -> Result<(), String> {
         return Err(format!("Usage: {} <algorithm> <number>", args[0]));
     }
     let method = &args[1];
-    let n: u128 = args[2]
+    let n: BigInt = args[2]
         .parse()
         .map_err(|_| String::from("Please provide a valid positive integer"))?;
     match method.as_str() {
-        "pollards_rho" => println!("{}", Factorization::new::<algorithms::PollardsRho>(n)),
-        "trial_division" => println!("{}", Factorization::new::<algorithms::TrialDivision>(n)),
+        "miller_rabin" => println!("{}", MillerRabin::is_prime(&n)),
+        "pollards_rho" => println!("{}", Factorization::new::<algorithms::PollardsRho>(&n)),
+        "trial_division" => println!("{}", Factorization::new::<algorithms::TrialDivision>(&n)),
         _ => {
             return Err(String::from(
                 "Unknown algorithm. Available options: pollards_rho, trial_division",

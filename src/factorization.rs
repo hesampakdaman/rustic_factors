@@ -1,3 +1,4 @@
+use num_bigint::BigInt;
 use std::collections::BTreeMap;
 use std::fmt;
 
@@ -5,13 +6,13 @@ use crate::PrimeFactorization;
 
 static SUPERSCRIPTS: [&str; 10] = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"];
 
-pub struct Factorization {
-    number: u128,
-    factors: Vec<u128>,
+pub struct Factorization<'a> {
+    number: &'a BigInt,
+    factors: Vec<BigInt>,
 }
 
-impl Factorization {
-    pub fn new<F: PrimeFactorization>(n: u128) -> Self {
+impl<'a> Factorization<'a> {
+    pub fn new<F: PrimeFactorization>(n: &'a BigInt) -> Self {
         Factorization {
             number: n,
             factors: F::prime_factorization(n),
@@ -28,21 +29,21 @@ impl Factorization {
         format!("{} = {}", self.number, display)
     }
 
-    fn frequencies(&self) -> BTreeMap<u128, u128> {
-        self.factors.iter().fold(BTreeMap::new(), |mut bmap, &n| {
+    fn frequencies(&self) -> BTreeMap<&BigInt, u128> {
+        self.factors.iter().fold(BTreeMap::new(), |mut bmap, n| {
             *bmap.entry(n).or_insert(0) += 1;
             bmap
         })
     }
 }
 
-impl fmt::Display for Factorization {
+impl fmt::Display for Factorization<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.display())
     }
 }
 
-fn format_factor(base: u128, exp: u128) -> String {
+fn format_factor(base: &BigInt, exp: u128) -> String {
     fn format_exp(exp: u128) -> String {
         if exp <= 1 {
             return "".to_string();
@@ -59,20 +60,31 @@ fn format_factor(base: u128, exp: u128) -> String {
 mod tests {
     use super::*;
 
+    struct FakePrimeFactorizer;
+
+    impl PrimeFactorization for FakePrimeFactorizer {
+        fn prime_factorization(n: &BigInt) -> Vec<BigInt> {
+            if n == &BigInt::from(36) {
+                return vec![2, 2, 3, 3].into_iter().map(BigInt::from).collect();
+            } else {
+                return vec![2; 12].into_iter().map(BigInt::from).collect();
+            }
+        }
+    }
+
+    fn check(n: u32, expected: &str) {
+        let n = BigInt::from(n);
+        let actual = Factorization::new::<FakePrimeFactorizer>(&n);
+        assert_eq!(format!("{actual}"), expected);
+    }
+
     #[test]
     fn small_composite() {
-        let number = 36;
-        let factors = vec![2, 2, 3, 3];
-        let actual = Factorization { number, factors };
-        assert_eq!(format!("{actual}"), "36 = 2² x 3²");
+        check(36, "36 = 2² x 3²");
     }
 
     #[test]
     fn big_composite() {
-        let number = 2u128.pow(12);
-        let factors = vec![2; 12];
-        let actual = Factorization { number, factors };
-        assert_eq!(format!("{actual}"), "4096 = 2¹²");
+        check(4096, "4096 = 2¹²");
     }
-
 }
