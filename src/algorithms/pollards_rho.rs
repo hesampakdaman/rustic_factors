@@ -6,7 +6,6 @@ use crate::traits::Factorize;
 use crate::PrimeFactorization;
 use num_bigint::BigInt;
 use num_integer::Integer;
-use num_traits::{One, Signed};
 
 pub struct PollardsRho;
 
@@ -14,9 +13,9 @@ impl Factorize for PollardsRho {
     fn factorize(n: &BigInt) -> BigInt {
         let init = BigInt::from(2);
         let psudorandom_fn = utils::generate_pseudorandom_fn(n);
-        let finished = move |x: &BigInt, y: &BigInt| (x - y).abs().gcd(n) != BigInt::one();
+        let finished = move |x: &BigInt, y: &BigInt| (x - y).gcd(n) != BigInt::from(1);
         let (tortoise, hare) = utils::floyds_cycle_detection(init, &psudorandom_fn, &finished);
-        (hare - tortoise).abs().gcd(n)
+        (hare - tortoise).gcd(n)
     }
 }
 
