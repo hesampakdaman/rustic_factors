@@ -1,11 +1,13 @@
+use num_bigint::BigInt;
+
 pub trait PrimeFactorization {
-    fn prime_factorization(n: u128) -> Vec<u128>;
+    fn prime_factorization(n: &BigInt) -> Vec<BigInt>;
 }
 
 pub trait Factorize {
-    fn factorize(n: u128) -> u128;
+    fn factorize(n: &BigInt) -> BigInt;
 }
 
 pub trait PrimalityTest {
-    fn is_prime(p: u128) -> bool;
+    fn is_prime(p: &BigInt) -> bool;
 }

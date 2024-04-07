@@ -6,14 +6,11 @@ use num_traits::One;
 pub struct TrialDivision;
 
 impl PrimeFactorization for TrialDivision {
-    fn prime_factorization(n: u128) -> Vec<u128> {
-        if n <= 1 {
-            return vec![n];
+    fn prime_factorization(n: &BigInt) -> Vec<BigInt> {
+        if n <= &BigInt::one() {
+            return vec![n.clone()];
         }
-        trial_div(BigInt::from(n))
-            .into_iter()
-            .map(|d| d.try_into().unwrap())
-            .collect()
+        trial_div(n.clone())
     }
 }
 
@@ -68,14 +65,19 @@ impl Iterator for DivisorCandidates {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::tests::utils::check_factorization;
+
+    fn check(n: u32, factors: &[u32]) {
+        check_factorization::<TrialDivision>(n, factors);
+    }
 
     #[test]
     fn factorize_prime() {
-        assert_eq!(TrialDivision::prime_factorization(13), vec![13]);
+        check(13, &[13]);
     }
 
     #[test]
     fn factorize_composite() {
-        assert_eq!(TrialDivision::prime_factorization(12), vec![2, 2, 3]);
+        check(12, &[2, 2, 3]);
     }
 }
