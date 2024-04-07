@@ -1,5 +1,5 @@
 use crate::PrimeFactorization;
-use num_bigint::BigUint;
+use num_bigint::BigInt;
 use num_integer::Integer;
 use num_traits::One;
 
@@ -10,14 +10,14 @@ impl PrimeFactorization for TrialDivision {
         if n <= 1 {
             return vec![n];
         }
-        trial_div(BigUint::from(n))
+        trial_div(BigInt::from(n))
             .into_iter()
             .map(|d| d.try_into().unwrap())
             .collect()
     }
 }
 
-fn trial_div(mut n: BigUint) -> Vec<BigUint> {
+fn trial_div(mut n: BigInt) -> Vec<BigInt> {
     let mut factors = vec![];
     let mut divisors = DivisorCandidates::new();
     while let Some(d) = divisors.next() {
@@ -35,28 +35,28 @@ fn trial_div(mut n: BigUint) -> Vec<BigUint> {
     factors
 }
 
-fn is_still_undivided(n: &BigUint) -> bool {
+fn is_still_undivided(n: &BigInt) -> bool {
     !n.is_one()
 }
 
 struct DivisorCandidates {
-    current: BigUint,
+    current: BigInt,
 }
 
 impl DivisorCandidates {
     fn new() -> Self {
         DivisorCandidates {
-            current: BigUint::from(2u8),
+            current: BigInt::from(2u8),
         }
     }
 }
 
 impl Iterator for DivisorCandidates {
-    type Item = BigUint;
+    type Item = BigInt;
 
     fn next(&mut self) -> Option<Self::Item> {
         let output = self.current.clone();
-        self.current = if self.current == BigUint::from(2u8) {
+        self.current = if self.current == BigInt::from(2u8) {
             &self.current + 1u8
         } else {
             &self.current + 2u8
