@@ -1,5 +1,5 @@
 use crate::traits::{Factorize, PrimalityTest, PrimeFactorization};
-use num_bigint::BigInt;
+use bnum::types::U512;
 use num_integer::Integer;
 use num_traits::One;
 use std::marker::PhantomData;
@@ -19,7 +19,7 @@ where
     Factorizer: Factorize,
     PrimeTester: PrimalityTest,
 {
-    fn prime_factorization(n: &BigInt) -> Vec<BigInt> {
+    fn prime_factorization(n: &U512) -> Vec<U512> {
         let max_successive_failures = 5;
         Self::new(max_successive_failures).recursive_factorization(n.clone())
     }
@@ -38,9 +38,9 @@ where
         }
     }
 
-    fn recursive_factorization(&self, mut n: BigInt) -> Vec<BigInt> {
+    fn recursive_factorization(&self, mut n: U512) -> Vec<U512> {
         let mut factors = vec![];
-        let two = BigInt::from(2);
+        let two = U512::from(2u8);
         while n.is_even() {
             factors.push(two.clone());
             n /= &two;
@@ -49,14 +49,14 @@ where
         factors
     }
 
-    fn recursion_step(&self, n: BigInt, factors: &mut Vec<BigInt>, retried: usize) {
+    fn recursion_step(&self, n: U512, factors: &mut Vec<U512>, retried: usize) {
         if retried == self.max_successive_fails {
             panic![
                 "Failed to find factor after {0} succesive attempts",
                 self.max_successive_fails
             ]
         }
-        if n <= BigInt::one() {
+        if n <= U512::one() {
             return;
         }
         match self.classify_factor(Factorizer::factorize(&n), &n) {
@@ -72,7 +72,7 @@ where
         }
     }
 
-    fn classify_factor(&self, factor: BigInt, n: &BigInt) -> DivisorOfN {
+    fn classify_factor(&self, factor: U512, n: &U512) -> DivisorOfN {
         if PrimeTester::is_prime(&factor) {
             return DivisorOfN::Prime(factor);
         }
@@ -84,9 +84,9 @@ where
 }
 
 enum DivisorOfN {
-    Prime(BigInt),
-    Composite(BigInt),
-    Trivial(BigInt),
+    Prime(U512),
+    Composite(U512),
+    Trivial(U512),
 }
 
 #[cfg(test)]
@@ -98,23 +98,23 @@ mod tests {
     struct FakePrimeTester;
 
     impl PrimalityTest for FakePrimeTester {
-        fn is_prime(n: &BigInt) -> bool {
-            [2, 3, 5].contains(&n.try_into().unwrap())
+        fn is_prime(n: &U512) -> bool {
+            [2, 3, 5].contains(&n.to_str_radix(10).parse().unwrap())
         }
     }
 
     struct FakeFactorizer;
 
     impl Factorize for FakeFactorizer {
-        fn factorize(n: &BigInt) -> BigInt {
+        fn factorize(n: &U512) -> U512 {
             if n.is_even() {
-                return 2.into();
+                return U512::from(2u8);
             }
-            if n % 3 == BigInt::zero() {
-                return 3.into();
+            if n % U512::from(3u8) == U512::zero() {
+                return U512::from(3u8);
             }
-            if n % 5 == BigInt::zero() {
-                return 5.into();
+            if n % U512::from(5u8) == U512::zero() {
+                return U512::from(5u8);
             }
             n.to_owned()
         }

@@ -1,10 +1,10 @@
-use num_bigint::{BigInt, RandBigInt};
-use num_traits::One;
+use bnum::types::U512;
+use rand::Rng;
 
-pub fn floyds_cycle_detection<F, P>(init: BigInt, next: &F, finished: &P) -> (BigInt, BigInt)
+pub fn floyds_cycle_detection<F, P>(init: U512, next: &F, finished: &P) -> (U512, U512)
 where
-    F: Fn(&BigInt) -> BigInt + ?Sized,
-    P: Fn(&BigInt, &BigInt) -> bool + ?Sized,
+    F: Fn(&U512) -> U512 + ?Sized,
+    P: Fn(&U512, &U512) -> bool + ?Sized,
 {
     let mut tortoise = init;
     let mut hare = next(&tortoise);
@@ -15,11 +15,11 @@ where
     (tortoise, hare)
 }
 
-pub fn generate_pseudorandom_fn(n: &'_ BigInt) -> impl Fn(&BigInt) -> BigInt + '_ {
-    let c = random_integer(&n);
-    move |x| (x.pow(2) + &c) % n
+pub fn generate_pseudorandom_fn(n: &'_ U512) -> impl Fn(&U512) -> U512 + '_ {
+    let c = random_integer(n);
+    move |x| (x.pow(2) + c) % n
 }
 
-fn random_integer(bound: &BigInt) -> BigInt {
-    rand::thread_rng().gen_bigint_range(&BigInt::one(), bound)
+fn random_integer(bound: &U512) -> U512 {
+    rand::thread_rng().gen_range(U512::from(2u8)..*bound)
 }

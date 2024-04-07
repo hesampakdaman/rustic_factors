@@ -1,13 +1,13 @@
-use num_bigint::BigInt;
+use bnum::types::U512;
 
 pub trait PrimeFactorization {
-    fn prime_factorization(n: &BigInt) -> Vec<BigInt>;
+    fn prime_factorization(n: &U512) -> Vec<U512>;
 }
 
 pub trait Factorize {
-    fn factorize(n: &BigInt) -> BigInt;
+    fn factorize(n: &U512) -> U512;
 }
 
 pub trait PrimalityTest {
-    fn is_prime(p: &BigInt) -> bool;
+    fn is_prime(p: &U512) -> bool;
 }

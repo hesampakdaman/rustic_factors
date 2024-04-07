@@ -1,20 +1,20 @@
 use crate::PrimeFactorization;
-use num_bigint::BigInt;
+use bnum::types::U512;
 use num_integer::Integer;
 use num_traits::One;
 
 pub struct TrialDivision;
 
 impl PrimeFactorization for TrialDivision {
-    fn prime_factorization(n: &BigInt) -> Vec<BigInt> {
-        if n <= &BigInt::one() {
+    fn prime_factorization(n: &U512) -> Vec<U512> {
+        if n <= &U512::one() {
             return vec![n.clone()];
         }
         trial_div(n.clone())
     }
 }
 
-fn trial_div(mut n: BigInt) -> Vec<BigInt> {
+fn trial_div(mut n: U512) -> Vec<U512> {
     let mut factors = vec![];
     let mut divisors = DivisorCandidates::new();
     while let Some(d) = divisors.next() {
@@ -32,31 +32,31 @@ fn trial_div(mut n: BigInt) -> Vec<BigInt> {
     factors
 }
 
-fn is_still_undivided(n: &BigInt) -> bool {
+fn is_still_undivided(n: &U512) -> bool {
     !n.is_one()
 }
 
 struct DivisorCandidates {
-    current: BigInt,
+    current: U512,
 }
 
 impl DivisorCandidates {
     fn new() -> Self {
         DivisorCandidates {
-            current: BigInt::from(2u8),
+            current: U512::from(2u8),
         }
     }
 }
 
 impl Iterator for DivisorCandidates {
-    type Item = BigInt;
+    type Item = U512;
 
     fn next(&mut self) -> Option<Self::Item> {
         let output = self.current.clone();
-        self.current = if self.current == BigInt::from(2u8) {
-            &self.current + 1u8
+        self.current = if self.current == U512::from(2u8) {
+            &self.current + U512::from(1u8)
         } else {
-            &self.current + 2u8
+            &self.current + U512::from(2u8)
         };
         Some(output)
     }

@@ -3,15 +3,15 @@ mod utils;
 
 use self::composite_evidence::CompositeEvidence;
 use crate::traits::PrimalityTest;
-use num_bigint::BigInt;
+use bnum::types::U512;
 use num_integer::Integer;
 
 pub struct MillerRabin;
 
 impl PrimalityTest for MillerRabin {
-    fn is_prime(p: &BigInt) -> bool {
-        let two: BigInt = 2.into();
-        if p == &two || p == &BigInt::from(3) {
+    fn is_prime(p: &U512) -> bool {
+        let two = U512::from(2u8);
+        if p == &two || p == &U512::from(3u8) {
             return true;
         }
         if p < &two || p.is_multiple_of(&two) {
@@ -21,10 +21,10 @@ impl PrimalityTest for MillerRabin {
     }
 }
 
-fn miller_rabin(p: &BigInt, trials: usize) -> bool {
+fn miller_rabin(p: &U512, trials: usize) -> bool {
     let evidence = CompositeEvidence::new(p);
     let likely_prime = |witness| !evidence.witnessed_by(&witness);
-    utils::RandomIntegers::new(BigInt::from(2)..p - 1)
+    utils::RandomIntegers::new(U512::from(2u8)..p - U512::from(1u8))
         .take(trials)
         .all(likely_prime)
 }
@@ -40,15 +40,7 @@ mod tests {
 
     #[test]
     fn test_prime_numbers() {
-        let primes = [
-            3,
-            5,
-            7,
-            11,
-            104729,
-            6700417,
-            2u32.pow(31) - 1,
-        ];
+        let primes = [3, 5, 7, 11, 104729, 6700417, 2u32.pow(31) - 1];
         for prime in primes {
             check(prime, true);
         }

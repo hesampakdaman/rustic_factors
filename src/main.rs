@@ -1,8 +1,6 @@
-use num_bigint::BigInt;
+use bnum::types::U512;
 use rustic_factors::algorithms;
 use rustic_factors::Factorization;
-use rustic_factors::primality_test::MillerRabin;
-use rustic_factors::traits::PrimalityTest;
 use std::env;
 
 fn main() {
@@ -17,11 +15,10 @@ fn run(args: Vec<String>) -> Result<(), String> {
         return Err(format!("Usage: {} <algorithm> <number>", args[0]));
     }
     let method = &args[1];
-    let n: BigInt = args[2]
+    let n: U512 = args[2]
         .parse()
         .map_err(|_| String::from("Please provide a valid positive integer"))?;
     match method.as_str() {
-        "miller_rabin" => println!("{}", MillerRabin::is_prime(&n)),
         "pollards_rho" => println!("{}", Factorization::new::<algorithms::PollardsRho>(&n)),
         "trial_division" => println!("{}", Factorization::new::<algorithms::TrialDivision>(&n)),
         _ => {
