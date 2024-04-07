@@ -1,32 +1,24 @@
-use rand::Rng;
-use std::ops::Range;
+use num_bigint::{BigInt, RandBigInt};
+use num_traits::One;
 
-pub fn floyds_cycle_detection<F, P>(init: u128, next: &F, finished: &P) -> (u128, u128)
+pub fn floyds_cycle_detection<F, P>(init: BigInt, next: &F, finished: &P) -> (BigInt, BigInt)
 where
-    F: Fn(u128) -> u128 + ?Sized,
-    P: Fn(u128, u128) -> bool + ?Sized,
+    F: Fn(&BigInt) -> BigInt + ?Sized,
+    P: Fn(&BigInt, &BigInt) -> bool + ?Sized,
 {
     let mut tortoise = init;
-    let mut hare = next(tortoise);
-    while !finished(tortoise, hare) {
-        tortoise = next(tortoise);
-        hare = next(next(hare));
+    let mut hare = next(&tortoise);
+    while !finished(&tortoise, &hare) {
+        tortoise = next(&tortoise);
+        hare = next(&next(&hare));
     }
     (tortoise, hare)
 }
 
-pub fn gcd(a: u128, b: u128) -> u128 {
-    if b == 0 {
-        return a;
-    }
-    gcd(b, a % b)
+pub fn generate_pseudorandom_fn(n: &'_ BigInt) -> impl Fn(&BigInt) -> BigInt + '_ {
+    move |x| (x.pow(2) + random_integer(n)) % n
 }
 
-pub fn generate_psudeorandom_fn(n: u128) -> impl Fn(u128) -> u128 {
-    let c = random_integer(1..n);
-    move |x| (x * x + c) % n
-}
-
-fn random_integer(r: Range<u128>) -> u128 {
-    rand::thread_rng().gen_range(r)
+fn random_integer(bound: &BigInt) -> BigInt {
+    rand::thread_rng().gen_bigint_range(&BigInt::one(), bound)
 }
