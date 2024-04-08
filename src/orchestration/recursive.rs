@@ -20,7 +20,7 @@ where
     PrimeTester: PrimalityTest,
 {
     fn prime_factorization(n: &U512) -> Vec<U512> {
-        let max_successive_failures = 5;
+        let max_successive_failures = 100;
         Self::new(max_successive_failures).recursive_factorization(n.clone())
     }
 }
