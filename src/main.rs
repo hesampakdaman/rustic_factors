@@ -19,11 +19,12 @@ fn run(args: Vec<String>) -> Result<(), String> {
         .parse()
         .map_err(|_| String::from("Please provide a valid positive integer"))?;
     match method.as_str() {
+        "fermats_factorization_method" => println!("{}", Factorization::new::<algorithms::FermatsFactorizationMethod>(&n)),
         "pollards_rho" => println!("{}", Factorization::new::<algorithms::PollardsRho>(&n)),
         "trial_division" => println!("{}", Factorization::new::<algorithms::TrialDivision>(&n)),
         _ => {
             return Err(String::from(
-                "Unknown algorithm. Available options: pollards_rho, trial_division",
+                "Unknown algorithm. Available options: fermats_factorization_method, pollards_rho, trial_division",
             ));
         }
     };
@@ -63,7 +64,7 @@ mod tests {
                 String::from("123")
             ])
             .unwrap_err(),
-            String::from("Unknown algorithm. Available options: pollards_rho, trial_division")
+            String::from("Unknown algorithm. Available options: fermats_factorization_method, pollards_rho, trial_division")
         );
     }
 }
