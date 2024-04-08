@@ -1,4 +1,4 @@
-use num_bigint::BigInt;
+use bnum::types::U512;
 use std::collections::BTreeMap;
 use std::fmt;
 
@@ -7,12 +7,12 @@ use crate::PrimeFactorization;
 static SUPERSCRIPTS: [&str; 10] = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"];
 
 pub struct Factorization<'a> {
-    number: &'a BigInt,
-    factors: Vec<BigInt>,
+    number: &'a U512,
+    factors: Vec<U512>,
 }
 
 impl<'a> Factorization<'a> {
-    pub fn new<F: PrimeFactorization>(n: &'a BigInt) -> Self {
+    pub fn new<F: PrimeFactorization>(n: &'a U512) -> Self {
         Factorization {
             number: n,
             factors: F::prime_factorization(n),
@@ -29,7 +29,7 @@ impl<'a> Factorization<'a> {
         format!("{} = {}", self.number, display)
     }
 
-    fn frequencies(&self) -> BTreeMap<&BigInt, u128> {
+    fn frequencies(&self) -> BTreeMap<&U512, u128> {
         self.factors.iter().fold(BTreeMap::new(), |mut bmap, n| {
             *bmap.entry(n).or_insert(0) += 1;
             bmap
@@ -43,7 +43,7 @@ impl fmt::Display for Factorization<'_> {
     }
 }
 
-fn format_factor(base: &BigInt, exp: u128) -> String {
+fn format_factor(base: &U512, exp: u128) -> String {
     fn format_exp(exp: u128) -> String {
         if exp <= 1 {
             return "".to_string();
@@ -63,17 +63,17 @@ mod tests {
     struct FakePrimeFactorizer;
 
     impl PrimeFactorization for FakePrimeFactorizer {
-        fn prime_factorization(n: &BigInt) -> Vec<BigInt> {
-            if n == &BigInt::from(36) {
-                return vec![2, 2, 3, 3].into_iter().map(BigInt::from).collect();
+        fn prime_factorization(n: &U512) -> Vec<U512> {
+            if n == &U512::from(36u8) {
+                return vec![2u8, 2, 3, 3].into_iter().map(U512::from).collect();
             } else {
-                return vec![2; 12].into_iter().map(BigInt::from).collect();
+                return vec![2u8; 12].into_iter().map(U512::from).collect();
             }
         }
     }
 
     fn check(n: u32, expected: &str) {
-        let n = BigInt::from(n);
+        let n = U512::from(n);
         let actual = Factorization::new::<FakePrimeFactorizer>(&n);
         assert_eq!(format!("{actual}"), expected);
     }

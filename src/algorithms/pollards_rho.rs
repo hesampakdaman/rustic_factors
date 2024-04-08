@@ -4,23 +4,23 @@ use crate::orchestration;
 use crate::primality_test::MillerRabin;
 use crate::traits::Factorize;
 use crate::PrimeFactorization;
-use num_bigint::BigInt;
+use bnum::types::U512;
 use num_integer::Integer;
 
 pub struct PollardsRho;
 
 impl Factorize for PollardsRho {
-    fn factorize(n: &BigInt) -> BigInt {
-        let init = BigInt::from(2);
-        let psudorandom_fn = utils::generate_pseudorandom_fn(n);
-        let finished = move |x: &BigInt, y: &BigInt| (x - y).gcd(n) != BigInt::from(1);
-        let (tortoise, hare) = utils::floyds_cycle_detection(init, &psudorandom_fn, &finished);
-        (hare - tortoise).gcd(n)
+    fn factorize(n: &U512) -> U512 {
+        let init = U512::from(2u8);
+        let pseudorandom_fn = utils::generate_pseudorandom_fn(&n);
+        let finished = move |x: &U512, y: &U512| x.abs_diff(*y).gcd(&n) != U512::from(1u8);
+        let (tortoise, hare) = utils::floyds_cycle_detection(init, &pseudorandom_fn, &finished);
+        hare.abs_diff(tortoise).gcd(&n)
     }
 }
 
 impl PrimeFactorization for PollardsRho {
-    fn prime_factorization(n: &BigInt) -> Vec<BigInt> {
+    fn prime_factorization(n: &U512) -> Vec<U512> {
         orchestration::FactorizeRecursiveWith::<Self, MillerRabin>::prime_factorization(n)
     }
 }
