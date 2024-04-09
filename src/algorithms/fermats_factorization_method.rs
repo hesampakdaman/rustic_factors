@@ -9,7 +9,7 @@ pub struct FermatsFactorizationMethod;
 
 impl Factorize for FermatsFactorizationMethod {
     fn factorize(n: &U512) -> U512 {
-        let mut a = init(n);
+        let mut a = ceil_sqrt(n);
         let mut b2 = a * a - n;
         while !is_perfect_square(&b2) {
             a += U512::ONE;
@@ -19,7 +19,7 @@ impl Factorize for FermatsFactorizationMethod {
     }
 }
 
-fn init(n: &U512) -> U512 {
+fn ceil_sqrt(n: &U512) -> U512 {
     if is_perfect_square(n) {
         n.sqrt()
     } else {
