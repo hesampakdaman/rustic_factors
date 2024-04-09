@@ -9,18 +9,18 @@ pub struct FermatsFactorizationMethod;
 
 impl Factorize for FermatsFactorizationMethod {
     fn factorize(n: &U512) -> U512 {
-        let mut a = init(&n);
+        let mut a = init(n);
         let mut b2 = a * a - n;
         while !is_perfect_square(&b2) {
             a += U512::ONE;
-            b2 = &a * &a - n;
+            b2 = a * a - n;
         }
         a + b2.sqrt()
     }
 }
 
 fn init(n: &U512) -> U512 {
-    if is_perfect_square(&n) {
+    if is_perfect_square(n) {
         n.sqrt()
     } else {
         n.sqrt() + U512::ONE
@@ -29,7 +29,7 @@ fn init(n: &U512) -> U512 {
 
 fn is_perfect_square(n: &U512) -> bool {
     let sqrt = n.sqrt();
-    &sqrt * &sqrt == *n
+    sqrt * sqrt == *n
 }
 
 impl PrimeFactorization for FermatsFactorizationMethod {

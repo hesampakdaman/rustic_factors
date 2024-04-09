@@ -21,7 +21,7 @@ where
 {
     fn prime_factorization(n: &U512) -> Vec<U512> {
         let max_successive_failures = 100;
-        Self::new(max_successive_failures).recursive_factorization(n.clone())
+        Self::new(max_successive_failures).recursive_factorization(*n)
     }
 }
 
@@ -42,7 +42,7 @@ where
         let mut factors = vec![];
         let two = U512::from(2u8);
         while n.is_even() {
-            factors.push(two.clone());
+            factors.push(two);
             n /= &two;
         }
         self.recursion_step(n, &mut factors, 0);
@@ -62,11 +62,11 @@ where
         match self.classify_factor(Factorizer::factorize(&n), &n) {
             DivisorOfN::Trivial(_) => self.recursion_step(n, factors, retried + 1),
             DivisorOfN::Prime(p) => {
-                factors.push(p.clone());
+                factors.push(p);
                 self.recursion_step(n / p, factors, 0);
             }
             DivisorOfN::Composite(d) => {
-                self.recursion_step(n / d.clone(), factors, 0);
+                self.recursion_step(n / d, factors, 0);
                 self.recursion_step(d, factors, 0);
             }
         }
