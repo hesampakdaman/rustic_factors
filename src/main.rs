@@ -1,5 +1,7 @@
 use bnum::types::U512;
 use rustic_factors::algorithms;
+use rustic_factors::primality_test;
+use rustic_factors::traits::PrimalityTest;
 use rustic_factors::Factorization;
 use std::env;
 
@@ -19,12 +21,20 @@ fn run(args: Vec<String>) -> Result<(), String> {
         .parse()
         .map_err(|_| String::from("Please provide a valid positive integer"))?;
     match method.as_str() {
-        "fermats_factorization_method" => println!("{}", Factorization::new::<algorithms::FermatsFactorizationMethod>(&n)),
+        "miller_rabin" => println!(
+            "is {} prime? {}",
+            &n,
+            primality_test::MillerRabin::is_prime(&n)
+        ),
+        "fermats_factorization_method" => println!(
+            "{}",
+            Factorization::new::<algorithms::FermatsFactorizationMethod>(&n)
+        ),
         "pollards_rho" => println!("{}", Factorization::new::<algorithms::PollardsRho>(&n)),
         "trial_division" => println!("{}", Factorization::new::<algorithms::TrialDivision>(&n)),
         _ => {
             return Err(String::from(
-                "Unknown algorithm. Available options: fermats_factorization_method, pollards_rho, trial_division",
+                "Unknown algorithm. Available options: fermats_factorization_method, miller_rabin, pollards_rho, trial_division",
             ));
         }
     };
@@ -37,7 +47,12 @@ mod tests {
 
     #[test]
     fn happy_cases() {
-        for method in ["pollards_rho", "trial_division"] {
+        for method in [
+            "fermats_factorization_method",
+            "miller_rabin",
+            "pollards_rho",
+            "trial_division",
+        ] {
             assert!(run(vec![
                 String::from("rustic_factors"),
                 String::from(method),
@@ -64,7 +79,7 @@ mod tests {
                 String::from("123")
             ])
             .unwrap_err(),
-            String::from("Unknown algorithm. Available options: fermats_factorization_method, pollards_rho, trial_division")
+            String::from("Unknown algorithm. Available options: fermats_factorization_method, miller_rabin, pollards_rho, trial_division")
         );
     }
 }
