@@ -17,7 +17,7 @@ impl PrimalityTest for MillerRabin {
         if p < &two || p.is_multiple_of(&two) {
             return false;
         }
-        miller_rabin(&p, 10)
+        miller_rabin(p, 10)
     }
 }
 

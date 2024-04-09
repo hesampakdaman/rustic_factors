@@ -23,7 +23,7 @@ impl Iterator for RandomIntegers {
 
 pub fn highest_power_of_2_divisor(base: &U512) -> u32 {
     let mut exp = 0;
-    let mut base = base.clone();
+    let mut base = *base;
     while base.is_even() {
         exp += 1;
         base /= U512::from(2u8);

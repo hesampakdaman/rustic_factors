@@ -8,22 +8,22 @@ pub struct TrialDivision;
 impl PrimeFactorization for TrialDivision {
     fn prime_factorization(n: &U512) -> Vec<U512> {
         if n <= &U512::one() {
-            return vec![n.clone()];
+            return vec![*n];
         }
-        trial_div(n.clone())
+        trial_div(*n)
     }
 }
 
 fn trial_div(mut n: U512) -> Vec<U512> {
     let mut factors = vec![];
-    let mut divisors = DivisorCandidates::new();
-    while let Some(d) = divisors.next() {
+    let divisors = DivisorCandidates::new();
+    for d in divisors {
         if n < d.pow(2) {
             break;
         }
         while n.is_multiple_of(&d) {
             n /= &d;
-            factors.push(d.clone());
+            factors.push(d);
         }
     }
     if is_still_undivided(&n) {
@@ -52,11 +52,11 @@ impl Iterator for DivisorCandidates {
     type Item = U512;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let output = self.current.clone();
+        let output = self.current;
         self.current = if self.current == U512::from(2u8) {
-            &self.current + U512::from(1u8)
+            self.current + U512::from(1u8)
         } else {
-            &self.current + U512::from(2u8)
+            self.current + U512::from(2u8)
         };
         Some(output)
     }
