@@ -13,7 +13,7 @@ fn impl_recursive_prime_factorization(ast: &syn::DeriveInput) -> TokenStream {
     let gen = quote! {
         impl crate::traits::PrimeFactorization for #name {
             fn prime_factorization(n: &bnum::types::U512) -> Vec<bnum::types::U512> {
-                crate::orchestration::FactorizeRecursiveWith::<Self, crate::primality_test::MillerRabin>::prime_factorization(n)
+                crate::orchestration::RecursivePrimeFactorization::<Self, crate::primality_test::MillerRabin>::prime_factorization(n)
             }
         }
     };
