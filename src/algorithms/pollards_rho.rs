@@ -1,12 +1,11 @@
 mod utils;
 
-use crate::orchestration;
-use crate::primality_test::MillerRabin;
 use crate::traits::Factorize;
-use crate::PrimeFactorization;
 use bnum::types::U512;
 use num_integer::Integer;
+use rustic_factors_derive::RecursivePrimeFactorization;
 
+#[derive(RecursivePrimeFactorization)]
 pub struct PollardsRho;
 
 impl Factorize for PollardsRho {
@@ -16,12 +15,6 @@ impl Factorize for PollardsRho {
         let finished = move |x: &U512, y: &U512| x.abs_diff(*y).gcd(n) != U512::from(1u8);
         let (tortoise, hare) = utils::floyds_cycle_detection(init, &pseudorandom_fn, &finished);
         hare.abs_diff(tortoise).gcd(n)
-    }
-}
-
-impl PrimeFactorization for PollardsRho {
-    fn prime_factorization(n: &U512) -> Vec<U512> {
-        orchestration::FactorizeRecursiveWith::<Self, MillerRabin>::prime_factorization(n)
     }
 }
 

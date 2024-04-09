@@ -1,10 +1,9 @@
-use crate::orchestration;
-use crate::primality_test::MillerRabin;
 use crate::traits::Factorize;
-use crate::PrimeFactorization;
 use bnum::types::U512;
 use num_integer::Roots;
+use rustic_factors_derive::RecursivePrimeFactorization;
 
+#[derive(RecursivePrimeFactorization)]
 pub struct FermatsFactorizationMethod;
 
 impl Factorize for FermatsFactorizationMethod {
@@ -16,12 +15,6 @@ impl Factorize for FermatsFactorizationMethod {
             b2 = a * a - n;
         }
         a + b2.sqrt()
-    }
-}
-
-impl PrimeFactorization for FermatsFactorizationMethod {
-    fn prime_factorization(n: &U512) -> Vec<U512> {
-        orchestration::FactorizeRecursiveWith::<Self, MillerRabin>::prime_factorization(n)
     }
 }
 
