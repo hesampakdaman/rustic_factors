@@ -1,6 +1,5 @@
 use proc_macro::TokenStream;
 use quote::quote;
-use syn;
 
 #[proc_macro_derive(RecursivePrimeFactorization)]
 pub fn recursive_prime_factorization_derive(input: TokenStream) -> TokenStream {
