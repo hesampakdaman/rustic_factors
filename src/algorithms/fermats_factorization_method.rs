@@ -19,6 +19,12 @@ impl Factorize for FermatsFactorizationMethod {
     }
 }
 
+impl PrimeFactorization for FermatsFactorizationMethod {
+    fn prime_factorization(n: &U512) -> Vec<U512> {
+        orchestration::FactorizeRecursiveWith::<Self, MillerRabin>::prime_factorization(n)
+    }
+}
+
 fn ceil_sqrt(n: &U512) -> U512 {
     if is_perfect_square(n) {
         n.sqrt()
@@ -30,12 +36,6 @@ fn ceil_sqrt(n: &U512) -> U512 {
 fn is_perfect_square(n: &U512) -> bool {
     let sqrt = n.sqrt();
     sqrt * sqrt == *n
-}
-
-impl PrimeFactorization for FermatsFactorizationMethod {
-    fn prime_factorization(n: &U512) -> Vec<U512> {
-        orchestration::FactorizeRecursiveWith::<Self, MillerRabin>::prime_factorization(n)
-    }
 }
 
 #[cfg(test)]
