@@ -4,7 +4,7 @@ use num_integer::Integer;
 use num_traits::One;
 use std::marker::PhantomData;
 
-pub struct FactorizeRecursiveWith<F, P>
+pub struct RecursivePrimeFactorization<F, P>
 where
     F: Factorize,
     P: PrimalityTest,
@@ -14,7 +14,8 @@ where
     _prime_tester: PhantomData<P>,
 }
 
-impl<Factorizer, PrimeTester> PrimeFactorization for FactorizeRecursiveWith<Factorizer, PrimeTester>
+impl<Factorizer, PrimeTester> PrimeFactorization
+    for RecursivePrimeFactorization<Factorizer, PrimeTester>
 where
     Factorizer: Factorize,
     PrimeTester: PrimalityTest,
@@ -25,7 +26,7 @@ where
     }
 }
 
-impl<Factorizer, PrimeTester> FactorizeRecursiveWith<Factorizer, PrimeTester>
+impl<Factorizer, PrimeTester> RecursivePrimeFactorization<Factorizer, PrimeTester>
 where
     Factorizer: Factorize,
     PrimeTester: PrimalityTest,
@@ -120,7 +121,7 @@ mod tests {
         }
     }
 
-    type MyTestOrchestrator = FactorizeRecursiveWith<FakeFactorizer, FakePrimeTester>;
+    type MyTestOrchestrator = RecursivePrimeFactorization<FakeFactorizer, FakePrimeTester>;
 
     fn check(n: u32, factors: &[u32]) {
         check_factorization::<MyTestOrchestrator>(n, factors)

@@ -1,3 +1,3 @@
 pub mod recursive;
 
-pub use recursive::FactorizeRecursiveWith;
+pub use recursive::RecursivePrimeFactorization;
