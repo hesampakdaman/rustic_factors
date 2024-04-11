@@ -1,6 +1,4 @@
-#![allow(dead_code)]
-
-use crate::traits::{Factorize, PrimalityTest, PrimeFactorization};
+use crate::traits::{PrimalityTest, PrimeFactorization};
 use bnum::types::U512;
 
 pub(crate) fn check_factorization<F: PrimeFactorization>(n: u32, factors: &[u32]) {
@@ -10,12 +8,11 @@ pub(crate) fn check_factorization<F: PrimeFactorization>(n: u32, factors: &[u32]
     assert_eq!(actual, expected, "Test failed for n = {}", n);
 }
 
-pub(crate) fn check_factor<F: Factorize>(n: u32, factor: u32) {
-    let expected = U512::from(factor);
-    let actual = F::factorize(&U512::from(n));
-    assert_eq!(actual, expected, "Test failed for n = {}", n);
-}
-
 pub(crate) fn check_prime<P: PrimalityTest>(p: u32, expected: bool) {
-    assert_eq!(P::is_prime(&U512::from(p)), expected);
+    assert_eq!(
+        P::is_prime(&U512::from(p)),
+        expected,
+        "Test failed for prime = {}",
+        p
+    );
 }
