@@ -21,25 +21,27 @@ impl Factorize for PollardsRho {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tests::utils::check_factorization;
-
-    fn check(n: u32, factors: &[u32]) {
-        check_factorization::<PollardsRho>(n, factors);
-    }
+    use crate::test_utils;
 
     #[test]
     fn composites() {
-        let test_cases = [(8051, vec![83, 97]), (15, vec![3, 5]), (4096, vec![2; 12])];
-        for (n, expected) in test_cases {
-            check(n, &expected);
-        }
+        test_utils::prime_factorization::TestBuilder::<PollardsRho>::new()
+            .case(8051, &[83, 97])
+            .case(15, &[3, 5])
+            .case(4096, &[2; 12])
+            .build()
+            .check()
     }
 
     #[test]
     fn primes() {
-        let primes = [3, 5, 19, 29, 37];
-        for p in primes {
-            check(p, &[p])
-        }
+        test_utils::prime_factorization::TestBuilder::<PollardsRho>::new()
+            .case(3, &[3])
+            .case(5, &[5])
+            .case(19, &[19])
+            .case(29, &[29])
+            .case(37, &[37])
+            .build()
+            .check()
     }
 }

@@ -9,3 +9,6 @@ pub use traits::PrimeFactorization;
 
 #[cfg(test)]
 pub(crate) mod tests;
+
+#[cfg(test)]
+pub(crate) mod test_utils;

@@ -34,29 +34,28 @@ fn is_perfect_square(n: &U512) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tests::utils::check_factorization;
-
-    fn check(n: u32, factors: &[u32]) {
-        check_factorization::<FermatsFactorizationMethod>(n, factors);
-    }
+    use crate::test_utils;
 
     #[test]
     fn composites() {
-        let test_cases = [
-            (5959, vec![59, 101]),
-            (12345, vec![3, 5, 823]),
-            (102030, vec![2, 3, 5, 19, 179]),
-        ];
-        for (n, expected) in test_cases {
-            check(n, &expected);
-        }
+        test_utils::prime_factorization::TestBuilder::<FermatsFactorizationMethod>::new()
+            .case(5959, &[59, 101])
+            .case(12345, &[3, 5, 823])
+            .case(102030, &[2, 3, 5, 19, 179])
+            .build()
+            .check()
     }
 
     #[test]
     fn primes() {
-        let primes = [409, 881, 1021, 4001, 5003, 9001];
-        for p in primes {
-            check(p, &[p]);
-        }
+        test_utils::prime_factorization::TestBuilder::<FermatsFactorizationMethod>::new()
+            .case(409, &[409])
+            .case(881, &[881])
+            .case(1021, &[1021])
+            .case(4001, &[4001])
+            .case(5003, &[5003])
+            .case(9001, &[9001])
+            .build()
+            .check();
     }
 }
