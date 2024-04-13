@@ -11,4 +11,4 @@ pub use traits::PrimeFactorization;
 pub(crate) mod tests;
 
 #[cfg(test)]
-pub(crate) mod test_utils;
+pub(crate) mod test_framework;

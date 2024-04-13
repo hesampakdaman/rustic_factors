@@ -93,7 +93,7 @@ enum DivisorOfN {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils;
+    use crate::test_framework::prime_factorization::CheckTestBuilder;
     use num_traits::Zero;
 
     struct FakePrimeTester;
@@ -125,42 +125,42 @@ mod tests {
 
     #[test]
     fn single_prime() {
-        test_utils::prime_factorization::CheckTestBuilder::<MyTestOrchestrator>::new()
+        CheckTestBuilder::<MyTestOrchestrator>::new()
             .case(3, &[3])
             .build()
-            .check()
+            .check_cases()
     }
 
     #[test]
     fn composite_power_of_2() {
-        test_utils::prime_factorization::CheckTestBuilder::<MyTestOrchestrator>::new()
+        CheckTestBuilder::<MyTestOrchestrator>::new()
             .case(8, &[2; 3])
             .build()
-            .check()
+            .check_cases()
     }
 
     #[test]
     fn odd_composite() {
-        test_utils::prime_factorization::CheckTestBuilder::<MyTestOrchestrator>::new()
+        CheckTestBuilder::<MyTestOrchestrator>::new()
             .case(15, &[3, 5])
             .build()
-            .check()
+            .check_cases()
     }
 
     #[test]
     fn even_composite() {
-        test_utils::prime_factorization::CheckTestBuilder::<MyTestOrchestrator>::new()
+        CheckTestBuilder::<MyTestOrchestrator>::new()
             .case(30, &[2, 3, 5])
             .build()
-            .check()
+            .check_cases()
     }
 
     #[test]
     #[should_panic]
     fn fails_to_find_factor() {
-        test_utils::prime_factorization::CheckTestBuilder::<MyTestOrchestrator>::new()
+        CheckTestBuilder::<MyTestOrchestrator>::new()
             .case(49, &[7; 2])
             .build()
-            .check()
+            .check_cases()
     }
 }

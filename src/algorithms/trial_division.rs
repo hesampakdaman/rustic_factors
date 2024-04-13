@@ -65,21 +65,21 @@ impl Iterator for DivisorCandidates {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils;
+    use crate::test_framework::prime_factorization::CheckTestBuilder;
 
     #[test]
     fn prime() {
-        test_utils::prime_factorization::CheckTestBuilder::<TrialDivision>::new()
+        CheckTestBuilder::<TrialDivision>::new()
             .case(13, &[13])
             .build()
-            .check()
+            .check_cases()
     }
 
     #[test]
     fn composite() {
-        test_utils::prime_factorization::CheckTestBuilder::<TrialDivision>::new()
+        CheckTestBuilder::<TrialDivision>::new()
             .case(12, &[2, 2, 3])
             .build()
-            .check()
+            .check_cases()
     }
 }
