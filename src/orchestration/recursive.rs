@@ -125,42 +125,42 @@ mod tests {
 
     #[test]
     fn single_prime() {
-        CheckTestBuilder::<MyTestOrchestrator>::new()
+        CheckTestBuilder::new()
             .case(3, &[3])
-            .build()
+            .build::<MyTestOrchestrator>()
             .check_cases()
     }
 
     #[test]
     fn composite_power_of_2() {
-        CheckTestBuilder::<MyTestOrchestrator>::new()
+        CheckTestBuilder::new()
             .case(8, &[2; 3])
-            .build()
+            .build::<MyTestOrchestrator>()
             .check_cases()
     }
 
     #[test]
     fn odd_composite() {
-        CheckTestBuilder::<MyTestOrchestrator>::new()
+        CheckTestBuilder::new()
             .case(15, &[3, 5])
-            .build()
+            .build::<MyTestOrchestrator>()
             .check_cases()
     }
 
     #[test]
     fn even_composite() {
-        CheckTestBuilder::<MyTestOrchestrator>::new()
+        CheckTestBuilder::new()
             .case(30, &[2, 3, 5])
-            .build()
+            .build::<MyTestOrchestrator>()
             .check_cases()
     }
 
     #[test]
     #[should_panic]
     fn fails_to_find_factor() {
-        CheckTestBuilder::<MyTestOrchestrator>::new()
+        CheckTestBuilder::new()
             .case(49, &[7; 2])
-            .build()
+            .build::<MyTestOrchestrator>()
             .check_cases()
     }
 }

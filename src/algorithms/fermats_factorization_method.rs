@@ -38,24 +38,24 @@ mod tests {
 
     #[test]
     fn composites() {
-        CheckTestBuilder::<FermatsFactorizationMethod>::new()
+        CheckTestBuilder::new()
             .case(5959, &[59, 101])
             .case(12345, &[3, 5, 823])
             .case(102030, &[2, 3, 5, 19, 179])
-            .build()
+            .build::<FermatsFactorizationMethod>()
             .check_cases()
     }
 
     #[test]
     fn primes() {
-        CheckTestBuilder::<FermatsFactorizationMethod>::new()
+        CheckTestBuilder::new()
             .case(409, &[409])
             .case(881, &[881])
             .case(1021, &[1021])
             .case(4001, &[4001])
             .case(5003, &[5003])
             .case(9001, &[9001])
-            .build()
+            .build::<FermatsFactorizationMethod>()
             .check_cases()
     }
 }

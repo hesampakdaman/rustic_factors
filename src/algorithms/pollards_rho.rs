@@ -25,23 +25,23 @@ mod tests {
 
     #[test]
     fn composites() {
-        CheckTestBuilder::<PollardsRho>::new()
+        CheckTestBuilder::new()
             .case(8051, &[83, 97])
             .case(15, &[3, 5])
             .case(4096, &[2; 12])
-            .build()
+            .build::<PollardsRho>()
             .check_cases()
     }
 
     #[test]
     fn primes() {
-        CheckTestBuilder::<PollardsRho>::new()
+        CheckTestBuilder::new()
             .case(3, &[3])
             .case(5, &[5])
             .case(19, &[19])
             .case(29, &[29])
             .case(37, &[37])
-            .build()
+            .build::<PollardsRho>()
             .check_cases()
     }
 }

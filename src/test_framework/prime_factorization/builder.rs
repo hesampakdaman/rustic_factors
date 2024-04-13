@@ -1,21 +1,16 @@
 use super::check_test::CheckTest;
 use crate::traits::PrimeFactorization;
 use bnum::types::U512;
-use std::marker::PhantomData;
 
 type Factors = Vec<U512>;
 type TestCase = (U512, Factors);
-pub struct CheckTestBuilder<F: PrimeFactorization> {
+pub struct CheckTestBuilder {
     cases: Vec<TestCase>,
-    _marker: PhantomData<F>,
 }
 
-impl<F: PrimeFactorization> CheckTestBuilder<F> {
+impl CheckTestBuilder {
     pub fn new() -> Self {
-        Self {
-            cases: Vec::new(),
-            _marker: PhantomData,
-        }
+        Self { cases: Vec::new() }
     }
 
     pub fn case(mut self, n: u128, factors: &[u128]) -> Self {
@@ -25,7 +20,7 @@ impl<F: PrimeFactorization> CheckTestBuilder<F> {
         self
     }
 
-    pub fn build(self) -> CheckTest<F> {
+    pub fn build<F: PrimeFactorization>(self) -> CheckTest<F> {
         CheckTest::<F>::new(self.cases)
     }
 }

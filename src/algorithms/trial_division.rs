@@ -69,17 +69,17 @@ mod tests {
 
     #[test]
     fn prime() {
-        CheckTestBuilder::<TrialDivision>::new()
+        CheckTestBuilder::new()
             .case(13, &[13])
-            .build()
+            .build::<TrialDivision>()
             .check_cases()
     }
 
     #[test]
     fn composite() {
-        CheckTestBuilder::<TrialDivision>::new()
+        CheckTestBuilder::new()
             .case(12, &[2, 2, 3])
-            .build()
+            .build::<TrialDivision>()
             .check_cases()
     }
 }
