@@ -24,6 +24,13 @@ mod tests {
     use crate::test_framework::prime_factorization::CheckTestBuilder;
 
     #[test]
+    fn default() {
+        CheckTestBuilder::default()
+            .build::<PollardsRho>()
+            .check_cases()
+    }
+
+    #[test]
     fn composites() {
         CheckTestBuilder::new()
             .case(8051, &[83, 97])
