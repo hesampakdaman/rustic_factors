@@ -3,8 +3,8 @@ use crate::traits::PrimeFactorization;
 use bnum::types::U512;
 use std::marker::PhantomData;
 
-type Factors = Vec<u128>;
-type TestCase = (u128, Factors);
+type Factors = Vec<U512>;
+type TestCase = (U512, Factors);
 pub struct CheckTestBuilder<F: PrimeFactorization> {
     cases: Vec<TestCase>,
     _marker: PhantomData<F>,
@@ -19,21 +19,13 @@ impl<F: PrimeFactorization> CheckTestBuilder<F> {
     }
 
     pub fn case(mut self, n: u128, factors: &[u128]) -> Self {
-        self.cases.push((n, Vec::from(factors)));
+        let n_u512 = U512::from(n);
+        let factors_u512 = factors.iter().map(|&f| U512::from(f)).collect();
+        self.cases.push((n_u512, factors_u512));
         self
     }
 
     pub fn build(self) -> CheckTest<F> {
-        let cases: Vec<(U512, Vec<U512>)> = self
-            .cases
-            .into_iter()
-            .map(|(n, factors)| {
-                (
-                    U512::from(n),
-                    factors.into_iter().map(|f| U512::from(f)).collect(),
-                )
-            })
-            .collect();
-        CheckTest::<F>::new(cases)
+        CheckTest::<F>::new(self.cases)
     }
 }
