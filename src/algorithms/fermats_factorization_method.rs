@@ -56,6 +56,6 @@ mod tests {
             .case(5003, &[5003])
             .case(9001, &[9001])
             .build()
-            .check_cases();
+            .check_cases()
     }
 }
