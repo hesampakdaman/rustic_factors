@@ -5,16 +5,16 @@ pub mod prime_factorization {
 
     type Factors = Vec<u128>;
     type TestCase = (u128, Factors);
-    pub struct TestBuilder<F: PrimeFactorization> {
+    pub struct CheckTestBuilder<F: PrimeFactorization> {
         cases: Vec<TestCase>,
-        _func: PhantomData<F>,
+        _marker: PhantomData<F>,
     }
 
-    impl<F: PrimeFactorization> TestBuilder<F> {
+    impl<F: PrimeFactorization> CheckTestBuilder<F> {
         pub fn new() -> Self {
             Self {
                 cases: Vec::new(),
-                _func: PhantomData,
+                _marker: PhantomData,
             }
         }
 
@@ -23,21 +23,21 @@ pub mod prime_factorization {
             self
         }
 
-        pub fn build(self) -> Checker<F> {
-            Checker::<F>::new(self.cases)
+        pub fn build(self) -> CheckTest<F> {
+            CheckTest::<F>::new(self.cases)
         }
     }
 
-    pub struct Checker<F: PrimeFactorization> {
+    pub struct CheckTest<F: PrimeFactorization> {
         cases: Vec<TestCase>,
-        _func: PhantomData<F>,
+        _maker: PhantomData<F>,
     }
 
-    impl<F: PrimeFactorization> Checker<F> {
+    impl<F: PrimeFactorization> CheckTest<F> {
         pub fn new(cases: Vec<TestCase>) -> Self {
             Self {
                 cases,
-                _func: PhantomData,
+                _maker: PhantomData,
             }
         }
 

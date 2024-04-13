@@ -69,7 +69,7 @@ mod tests {
 
     #[test]
     fn prime() {
-        test_utils::prime_factorization::TestBuilder::<TrialDivision>::new()
+        test_utils::prime_factorization::CheckTestBuilder::<TrialDivision>::new()
             .case(13, &[13])
             .build()
             .check()
@@ -77,7 +77,7 @@ mod tests {
 
     #[test]
     fn composite() {
-        test_utils::prime_factorization::TestBuilder::<TrialDivision>::new()
+        test_utils::prime_factorization::CheckTestBuilder::<TrialDivision>::new()
             .case(12, &[2, 2, 3])
             .build()
             .check()

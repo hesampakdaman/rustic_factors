@@ -38,7 +38,7 @@ mod tests {
 
     #[test]
     fn composites() {
-        test_utils::prime_factorization::TestBuilder::<FermatsFactorizationMethod>::new()
+        test_utils::prime_factorization::CheckTestBuilder::<FermatsFactorizationMethod>::new()
             .case(5959, &[59, 101])
             .case(12345, &[3, 5, 823])
             .case(102030, &[2, 3, 5, 19, 179])
@@ -48,7 +48,7 @@ mod tests {
 
     #[test]
     fn primes() {
-        test_utils::prime_factorization::TestBuilder::<FermatsFactorizationMethod>::new()
+        test_utils::prime_factorization::CheckTestBuilder::<FermatsFactorizationMethod>::new()
             .case(409, &[409])
             .case(881, &[881])
             .case(1021, &[1021])

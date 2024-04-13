@@ -25,7 +25,7 @@ mod tests {
 
     #[test]
     fn composites() {
-        test_utils::prime_factorization::TestBuilder::<PollardsRho>::new()
+        test_utils::prime_factorization::CheckTestBuilder::<PollardsRho>::new()
             .case(8051, &[83, 97])
             .case(15, &[3, 5])
             .case(4096, &[2; 12])
@@ -35,7 +35,7 @@ mod tests {
 
     #[test]
     fn primes() {
-        test_utils::prime_factorization::TestBuilder::<PollardsRho>::new()
+        test_utils::prime_factorization::CheckTestBuilder::<PollardsRho>::new()
             .case(3, &[3])
             .case(5, &[5])
             .case(19, &[19])

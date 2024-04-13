@@ -125,7 +125,7 @@ mod tests {
 
     #[test]
     fn single_prime() {
-        test_utils::prime_factorization::TestBuilder::<MyTestOrchestrator>::new()
+        test_utils::prime_factorization::CheckTestBuilder::<MyTestOrchestrator>::new()
             .case(3, &[3])
             .build()
             .check()
@@ -133,7 +133,7 @@ mod tests {
 
     #[test]
     fn composite_power_of_2() {
-        test_utils::prime_factorization::TestBuilder::<MyTestOrchestrator>::new()
+        test_utils::prime_factorization::CheckTestBuilder::<MyTestOrchestrator>::new()
             .case(8, &[2; 3])
             .build()
             .check()
@@ -141,7 +141,7 @@ mod tests {
 
     #[test]
     fn odd_composite() {
-        test_utils::prime_factorization::TestBuilder::<MyTestOrchestrator>::new()
+        test_utils::prime_factorization::CheckTestBuilder::<MyTestOrchestrator>::new()
             .case(15, &[3, 5])
             .build()
             .check()
@@ -149,7 +149,7 @@ mod tests {
 
     #[test]
     fn even_composite() {
-        test_utils::prime_factorization::TestBuilder::<MyTestOrchestrator>::new()
+        test_utils::prime_factorization::CheckTestBuilder::<MyTestOrchestrator>::new()
             .case(30, &[2, 3, 5])
             .build()
             .check()
@@ -158,7 +158,7 @@ mod tests {
     #[test]
     #[should_panic]
     fn fails_to_find_factor() {
-        test_utils::prime_factorization::TestBuilder::<MyTestOrchestrator>::new()
+        test_utils::prime_factorization::CheckTestBuilder::<MyTestOrchestrator>::new()
             .case(49, &[7; 2])
             .build()
             .check()
