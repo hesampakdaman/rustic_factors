@@ -93,7 +93,7 @@ enum DivisorOfN {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tests::utils::check_factorization;
+    use crate::test_framework::prime_factorization::CheckTestBuilder;
     use num_traits::Zero;
 
     struct FakePrimeTester;
@@ -123,33 +123,44 @@ mod tests {
 
     type MyTestOrchestrator = RecursivePrimeFactorization<FakeFactorizer, FakePrimeTester>;
 
-    fn check(n: u32, factors: &[u32]) {
-        check_factorization::<MyTestOrchestrator>(n, factors)
-    }
-
     #[test]
     fn single_prime() {
-        check(3, &[3])
+        CheckTestBuilder::new()
+            .case(3, &[3])
+            .build::<MyTestOrchestrator>()
+            .check_cases()
     }
 
     #[test]
     fn composite_power_of_2() {
-        check(8, &[2; 3])
+        CheckTestBuilder::new()
+            .case(8, &[2; 3])
+            .build::<MyTestOrchestrator>()
+            .check_cases()
     }
 
     #[test]
     fn odd_composite() {
-        check(15, &[3, 5])
+        CheckTestBuilder::new()
+            .case(15, &[3, 5])
+            .build::<MyTestOrchestrator>()
+            .check_cases()
     }
 
     #[test]
     fn even_composite() {
-        check(30, &[2, 3, 5])
+        CheckTestBuilder::new()
+            .case(30, &[2, 3, 5])
+            .build::<MyTestOrchestrator>()
+            .check_cases()
     }
 
     #[test]
     #[should_panic]
     fn fails_to_find_factor() {
-        check(49, &[7, 7])
+        CheckTestBuilder::new()
+            .case(49, &[7; 2])
+            .build::<MyTestOrchestrator>()
+            .check_cases()
     }
 }
