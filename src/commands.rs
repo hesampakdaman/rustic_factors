@@ -21,7 +21,7 @@ impl CommandMap {
             .join(", ")
     }
 
-    fn add_cmd(mut self, name: &str, cmd: CommandTraitObj) -> Self {
+    fn add(mut self, name: &str, cmd: CommandTraitObj) -> Self {
         self.0.insert(name.to_string(), cmd);
         self
     }
@@ -30,12 +30,12 @@ impl CommandMap {
 impl Default for CommandMap {
     fn default() -> Self {
         CommandMap(BTreeMap::new())
-            .add_cmd(
+            .add(
                 "fermats_factorization_method",
                 Box::new(algorithms::FermatsFactorizationMethod),
             )
-            .add_cmd("miller_rabin", Box::new(primality_test::MillerRabin))
-            .add_cmd("pollards_rho", Box::new(algorithms::PollardsRho))
-            .add_cmd("trial_division", Box::new(algorithms::TrialDivision))
+            .add("miller_rabin", Box::new(primality_test::MillerRabin))
+            .add("pollards_rho", Box::new(algorithms::PollardsRho))
+            .add("trial_division", Box::new(algorithms::TrialDivision))
     }
 }
