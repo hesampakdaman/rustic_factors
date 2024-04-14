@@ -19,7 +19,6 @@ fn impl_recursive_prime_factorization(ast: &syn::DeriveInput) -> TokenStream {
     gen.into()
 }
 
-
 #[proc_macro_derive(FactorizationCommand)]
 pub fn factorization_command_derive(input: TokenStream) -> TokenStream {
     let ast = syn::parse(input).unwrap();

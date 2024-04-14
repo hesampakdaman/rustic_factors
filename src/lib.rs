@@ -1,9 +1,9 @@
 pub mod algorithms;
+pub mod commands;
 pub mod factorization;
 pub mod orchestration;
 pub mod primality_test;
 pub mod traits;
-pub mod commands;
 
 pub use factorization::Factorization;
 pub use traits::PrimeFactorization;
