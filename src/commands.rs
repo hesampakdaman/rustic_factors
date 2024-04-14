@@ -1,25 +1,19 @@
-use crate::algorithms;
-use crate::primality_test;
-use crate::traits::PrimalityTest;
-use crate::Factorization;
-use bnum::types::U512;
+use crate::traits::Command;
+use crate::{algorithms, primality_test};
 use std::collections::BTreeMap;
 
-type Command = Box<dyn Fn(&U512) -> String>;
-pub struct Commands(BTreeMap<String, Command>);
+type CommandTraitObj = Box<dyn Command>;
+pub struct CommandMap(BTreeMap<String, CommandTraitObj>);
 
-impl Commands {
-    pub fn execute(&self, input: &U512, name: &str) -> Result<String, String> {
-        match self.0.get(name) {
-            Some(cmd) => Ok(cmd(&input)),
-            None => Err(format!(
-                "Unknown algorithm. Available options: {}",
-                self.available_methods()
-            )),
-        }
+impl CommandMap {
+    pub fn get(&self, name: &str) -> Result<&CommandTraitObj, String> {
+        self.0.get(name).ok_or(format!(
+            "Unknown algorithm. Available options: {}",
+            self.available_methods()
+        ))
     }
 
-    fn available_methods(&self) -> String {
+    pub fn available_methods(&self) -> String {
         self.0
             .keys()
             .map(|s| s.to_string())
@@ -28,32 +22,24 @@ impl Commands {
     }
 }
 
-impl Default for Commands {
+impl Default for CommandMap {
     fn default() -> Self {
-        let mut commands = Commands(BTreeMap::new());
+        let mut commands = CommandMap(BTreeMap::new());
+        commands.0.insert(
+            "fermats_factorization_method".to_string(),
+            Box::new(algorithms::FermatsFactorizationMethod),
+        );
         commands.0.insert(
             "miller_rabin".to_string(),
-            Box::new(|n| {
-                format!(
-                    "is {} prime? {}",
-                    n,
-                    primality_test::MillerRabin::is_prime(n)
-                )
-            }),
+            Box::new(primality_test::MillerRabin),
         );
         commands.0.insert(
             "pollards_rho".to_string(),
-            Box::new(|n| Factorization::new::<algorithms::PollardsRho>(n).to_string()),
-        );
-        commands.0.insert(
-            "fermats_factorization_method".to_string(),
-            Box::new(|n| {
-                Factorization::new::<algorithms::FermatsFactorizationMethod>(n).to_string()
-            }),
+            Box::new(algorithms::PollardsRho),
         );
         commands.0.insert(
             "trial_division".to_string(),
-            Box::new(|n| Factorization::new::<algorithms::TrialDivision>(n).to_string()),
+            Box::new(algorithms::TrialDivision),
         );
         commands
     }

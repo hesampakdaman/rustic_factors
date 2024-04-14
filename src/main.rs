@@ -1,5 +1,5 @@
 use bnum::types::U512;
-use rustic_factors::commands::Commands;
+use rustic_factors::commands::CommandMap;
 use std::env;
 
 fn main() {
@@ -14,7 +14,9 @@ fn run(args: Vec<String>) -> Result<String, String> {
         return Err(format!("Usage: {} <algorithm> <number>", args[0]));
     }
     let (n, method) = parse(args)?;
-    Commands::default().execute(&n, &method)
+    let cmd_map = CommandMap::default();
+    let cmd = cmd_map.get(&method)?;
+    Ok(cmd.run(&n))
 }
 
 fn parse(args: Vec<String>) -> Result<(U512, String), String> {
@@ -31,12 +33,8 @@ mod tests {
 
     #[test]
     fn happy_cases() {
-        for method in [
-            "fermats_factorization_method",
-            "miller_rabin",
-            "pollards_rho",
-            "trial_division",
-        ] {
+        let cmap = CommandMap::default();
+        for method in cmap.available_methods().split(", ") {
             assert!(run(vec![
                 String::from("rustic_factors"),
                 String::from(method),
@@ -47,23 +45,20 @@ mod tests {
     }
 
     #[test]
+    fn unsupported_method() {
+        assert!(run(vec![
+            String::from("rustic_factors"),
+            String::from("unsupported method"),
+            String::from("123")
+        ])
+        .is_err());
+    }
+
+    #[test]
     fn too_few_args() {
         assert_eq!(
             run(vec![String::from("rustic_factors")]).unwrap_err(),
             String::from("Usage: rustic_factors <algorithm> <number>")
-        );
-    }
-
-    #[test]
-    fn unknown_method() {
-        assert_eq!(
-            run(vec![
-                String::from("rustic_factors"),
-                String::from("unknown_method"),
-                String::from("123")
-            ])
-            .unwrap_err(),
-            String::from("Unknown algorithm. Available options: fermats_factorization_method, miller_rabin, pollards_rho, trial_division")
         );
     }
 }

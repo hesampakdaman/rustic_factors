@@ -2,8 +2,6 @@ use bnum::types::U512;
 use std::collections::BTreeMap;
 use std::fmt;
 
-use crate::PrimeFactorization;
-
 static SUPERSCRIPTS: [&str; 10] = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"];
 
 pub struct Factorization<'a> {
@@ -12,11 +10,8 @@ pub struct Factorization<'a> {
 }
 
 impl<'a> Factorization<'a> {
-    pub fn new<F: PrimeFactorization>(n: &'a U512) -> Self {
-        Factorization {
-            number: n,
-            factors: F::prime_factorization(n),
-        }
+    pub fn new(number: &'a U512, factors: Vec<U512>) -> Self {
+        Self { number, factors }
     }
 
     pub fn display(&self) -> String {
@@ -59,6 +54,7 @@ fn format_factor(base: &U512, exp: u128) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::PrimeFactorization;
 
     struct FakePrimeFactorizer;
 
@@ -74,7 +70,8 @@ mod tests {
 
     fn check(n: u32, expected: &str) {
         let n = U512::from(n);
-        let actual = Factorization::new::<FakePrimeFactorizer>(&n);
+        let factors = FakePrimeFactorizer::prime_factorization(&n);
+        let actual = Factorization::new(&n, factors);
         assert_eq!(format!("{actual}"), expected);
     }
 

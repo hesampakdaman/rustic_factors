@@ -18,3 +18,23 @@ fn impl_recursive_prime_factorization(ast: &syn::DeriveInput) -> TokenStream {
     };
     gen.into()
 }
+
+
+#[proc_macro_derive(FactorizationCommand)]
+pub fn factorization_command_derive(input: TokenStream) -> TokenStream {
+    let ast = syn::parse(input).unwrap();
+    impl_factorization_command(&ast)
+}
+
+fn impl_factorization_command(ast: &syn::DeriveInput) -> TokenStream {
+    let name = &ast.ident;
+    let gen = quote! {
+        impl crate::traits::Command for #name {
+            fn run(&self, n: &U512) -> String {
+                crate::Factorization::new(n, Self::prime_factorization(n)).to_string()
+            }
+        }
+        impl crate::traits::FactorizationCommand for # name {}
+    };
+    gen.into()
+}

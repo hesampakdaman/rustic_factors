@@ -1,9 +1,9 @@
-use crate::traits::Factorize;
+use crate::traits::{Factorize, PrimeFactorization};
 use bnum::types::U512;
 use num_integer::Roots;
-use rustic_factors_derive::RecursivePrimeFactorization;
+use rustic_factors_derive::{FactorizationCommand, RecursivePrimeFactorization};
 
-#[derive(RecursivePrimeFactorization)]
+#[derive(FactorizationCommand, RecursivePrimeFactorization)]
 pub struct FermatsFactorizationMethod;
 
 impl Factorize for FermatsFactorizationMethod {

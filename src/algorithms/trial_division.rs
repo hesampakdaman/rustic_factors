@@ -2,7 +2,9 @@ use crate::PrimeFactorization;
 use bnum::types::U512;
 use num_integer::Integer;
 use num_traits::One;
+use rustic_factors_derive::FactorizationCommand;
 
+#[derive(FactorizationCommand)]
 pub struct TrialDivision;
 
 impl PrimeFactorization for TrialDivision {
