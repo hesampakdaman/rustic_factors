@@ -15,16 +15,18 @@ impl<'a> Factorization<'a> {
     }
 
     pub fn display(&self) -> String {
-        let display = self
-            .frequencies()
-            .iter()
-            .map(|(&base, &exp)| format_factor(base, exp))
-            .collect::<Vec<_>>()
-            .join(" x ");
-        format!("{} = {}", self.number, display)
+        format!(
+            "{} = {}",
+            self.number,
+            self.factor_frequencies()
+                .iter()
+                .map(|(&base, &exp)| format_factor(base, exp))
+                .collect::<Vec<_>>()
+                .join(" x ")
+        )
     }
 
-    fn frequencies(&self) -> BTreeMap<&U512, u128> {
+    fn factor_frequencies(&self) -> BTreeMap<&U512, u128> {
         self.factors.iter().fold(BTreeMap::new(), |mut bmap, n| {
             *bmap.entry(n).or_insert(0) += 1;
             bmap
@@ -38,17 +40,19 @@ impl fmt::Display for Factorization<'_> {
     }
 }
 
-fn format_factor(base: &U512, exp: u128) -> String {
-    fn format_exp(exp: u128) -> String {
+fn format_factor(base: &U512, exponent: u128) -> String {
+    fn to_superscript(exp: u128) -> String {
         if exp <= 1 {
             return "".to_string();
         }
         exp.to_string()
             .chars()
             .map(|c| c.to_digit(10).unwrap() as usize)
-            .fold(String::new(), |s, d| format!("{}{}", s, SUPERSCRIPTS[d]))
+            .fold(String::new(), |s, idx| {
+                format!("{}{}", s, SUPERSCRIPTS[idx])
+            })
     }
-    format!("{}{}", base, format_exp(exp))
+    format!("{}{}", base, to_superscript(exponent))
 }
 
 #[cfg(test)]
@@ -61,9 +65,9 @@ mod tests {
     impl PrimeFactorization for FakePrimeFactorizer {
         fn prime_factorization(n: &U512) -> Vec<U512> {
             if n == &U512::from(36u8) {
-                return vec![2u8, 2, 3, 3].into_iter().map(U512::from).collect();
+                vec![2u8, 2, 3, 3].into_iter().map(U512::from).collect()
             } else {
-                return vec![2u8; 12].into_iter().map(U512::from).collect();
+                vec![2u8; 12].into_iter().map(U512::from).collect()
             }
         }
     }
