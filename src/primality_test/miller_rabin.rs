@@ -10,9 +10,10 @@ pub struct MillerRabin;
 
 impl Command for MillerRabin {
     fn run(&self, n: &U512) -> String {
-        match MillerRabin::is_prime(n) {
-            true => format!("{} is prime", n),
-            false => format!("{} is composite", n),
+        if MillerRabin::is_prime(n) {
+            format!("{} is prime", n)
+        } else {
+            format!("{} is composite", n)
         }
     }
 }
