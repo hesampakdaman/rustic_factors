@@ -40,8 +40,11 @@ where
     }
 
     fn recursive_factorization(&self, mut n: U512) -> Vec<U512> {
-        let mut factors = vec![];
         let two = U512::from(2u8);
+        if n <= two {
+            return vec![n];
+        }
+        let mut factors = vec![];
         while n.is_even() {
             factors.push(two);
             n /= &two;

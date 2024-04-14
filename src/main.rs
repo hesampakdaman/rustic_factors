@@ -1,44 +1,28 @@
 use bnum::types::U512;
-use rustic_factors::algorithms;
-use rustic_factors::primality_test;
-use rustic_factors::traits::PrimalityTest;
-use rustic_factors::Factorization;
+use rustic_factors::commands::Commands;
 use std::env;
 
 fn main() {
-    if let Err(msg) = run(env::args().collect()) {
-        eprintln!("{msg}");
-        std::process::exit(1)
+    match run(env::args().collect()) {
+        Ok(result) => println!("{result}"),
+        Err(msg) => eprintln!("{msg}"),
     }
 }
 
-fn run(args: Vec<String>) -> Result<(), String> {
+fn run(args: Vec<String>) -> Result<String, String> {
     if args.len() < 3 {
         return Err(format!("Usage: {} <algorithm> <number>", args[0]));
     }
-    let method = &args[1];
+    let (n, method) = parse(args)?;
+    Commands::default().execute(&n, &method)
+}
+
+fn parse(args: Vec<String>) -> Result<(U512, String), String> {
+    let method = String::from(&args[1]);
     let n: U512 = args[2]
         .parse()
-        .map_err(|_| String::from("Please provide a valid positive integer"))?;
-    match method.as_str() {
-        "miller_rabin" => println!(
-            "is {} prime? {}",
-            &n,
-            primality_test::MillerRabin::is_prime(&n)
-        ),
-        "fermats_factorization_method" => println!(
-            "{}",
-            Factorization::new::<algorithms::FermatsFactorizationMethod>(&n)
-        ),
-        "pollards_rho" => println!("{}", Factorization::new::<algorithms::PollardsRho>(&n)),
-        "trial_division" => println!("{}", Factorization::new::<algorithms::TrialDivision>(&n)),
-        _ => {
-            return Err(String::from(
-                "Unknown algorithm. Available options: fermats_factorization_method, miller_rabin, pollards_rho, trial_division",
-            ));
-        }
-    };
-    Ok(())
+        .map_err(|_| String::from("Please provide a valid positive integer <= 2⁵¹²"))?;
+    Ok((n, method))
 }
 
 #[cfg(test)]
