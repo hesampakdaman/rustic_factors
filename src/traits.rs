@@ -16,4 +16,4 @@ pub trait Command {
     fn run(&self, n: &U512) -> String;
 }
 
-pub trait FactorizationCommand: PrimeFactorization + Command {}
+pub trait FactorizationCommand: Command + PrimeFactorization {}
