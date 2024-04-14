@@ -32,10 +32,14 @@ fn miller_rabin(p: &U512, trials: usize) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tests::utils::check_prime;
 
     fn check(p: u32, expected: bool) {
-        check_prime::<MillerRabin>(p, expected);
+        assert_eq!(
+            MillerRabin::is_prime(&U512::from(p)),
+            expected,
+            "Test failed for prime = {}",
+            p
+        )
     }
 
     #[test]
