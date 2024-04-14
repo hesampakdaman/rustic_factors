@@ -11,3 +11,9 @@ pub trait Factorize {
 pub trait PrimalityTest {
     fn is_prime(p: &U512) -> bool;
 }
+
+pub trait Command {
+    fn run(&self, n: &U512) -> String;
+}
+
+pub trait FactorizationCommand: Command + PrimeFactorization {}

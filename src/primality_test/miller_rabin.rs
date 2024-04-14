@@ -2,11 +2,21 @@ mod composite_evidence;
 mod utils;
 
 use self::composite_evidence::CompositeEvidence;
-use crate::traits::PrimalityTest;
+use crate::traits::{Command, PrimalityTest};
 use bnum::types::U512;
 use num_integer::Integer;
 
 pub struct MillerRabin;
+
+impl Command for MillerRabin {
+    fn run(&self, n: &U512) -> String {
+        if MillerRabin::is_prime(n) {
+            format!("{} is prime", n)
+        } else {
+            format!("{} is composite", n)
+        }
+    }
+}
 
 impl PrimalityTest for MillerRabin {
     fn is_prime(p: &U512) -> bool {

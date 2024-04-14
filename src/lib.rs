@@ -1,4 +1,5 @@
 pub mod algorithms;
+pub mod commands;
 pub mod factorization;
 pub mod orchestration;
 pub mod primality_test;

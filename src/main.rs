@@ -1,44 +1,30 @@
 use bnum::types::U512;
-use rustic_factors::algorithms;
-use rustic_factors::primality_test;
-use rustic_factors::traits::PrimalityTest;
-use rustic_factors::Factorization;
+use rustic_factors::commands::CommandMap;
 use std::env;
 
 fn main() {
-    if let Err(msg) = run(env::args().collect()) {
-        eprintln!("{msg}");
-        std::process::exit(1)
+    match run(env::args().collect()) {
+        Ok(result) => println!("{result}"),
+        Err(msg) => eprintln!("{msg}"),
     }
 }
 
-fn run(args: Vec<String>) -> Result<(), String> {
+fn run(args: Vec<String>) -> Result<String, String> {
     if args.len() < 3 {
         return Err(format!("Usage: {} <algorithm> <number>", args[0]));
     }
-    let method = &args[1];
+    let (n, method) = parse(args)?;
+    let cmd_map = CommandMap::default();
+    let cmd = cmd_map.get(&method)?;
+    Ok(cmd.run(&n))
+}
+
+fn parse(args: Vec<String>) -> Result<(U512, String), String> {
+    let method = String::from(&args[1]);
     let n: U512 = args[2]
         .parse()
-        .map_err(|_| String::from("Please provide a valid positive integer"))?;
-    match method.as_str() {
-        "miller_rabin" => println!(
-            "is {} prime? {}",
-            &n,
-            primality_test::MillerRabin::is_prime(&n)
-        ),
-        "fermats_factorization_method" => println!(
-            "{}",
-            Factorization::new::<algorithms::FermatsFactorizationMethod>(&n)
-        ),
-        "pollards_rho" => println!("{}", Factorization::new::<algorithms::PollardsRho>(&n)),
-        "trial_division" => println!("{}", Factorization::new::<algorithms::TrialDivision>(&n)),
-        _ => {
-            return Err(String::from(
-                "Unknown algorithm. Available options: fermats_factorization_method, miller_rabin, pollards_rho, trial_division",
-            ));
-        }
-    };
-    Ok(())
+        .map_err(|_| String::from("Please provide a valid positive integer <= 2⁵¹²"))?;
+    Ok((n, method))
 }
 
 #[cfg(test)]
@@ -47,12 +33,8 @@ mod tests {
 
     #[test]
     fn happy_cases() {
-        for method in [
-            "fermats_factorization_method",
-            "miller_rabin",
-            "pollards_rho",
-            "trial_division",
-        ] {
+        let cmap = CommandMap::default();
+        for method in cmap.available_methods().split(", ") {
             assert!(run(vec![
                 String::from("rustic_factors"),
                 String::from(method),
@@ -63,23 +45,20 @@ mod tests {
     }
 
     #[test]
+    fn unsupported_method() {
+        assert!(run(vec![
+            String::from("rustic_factors"),
+            String::from("unsupported method"),
+            String::from("123")
+        ])
+        .is_err());
+    }
+
+    #[test]
     fn too_few_args() {
         assert_eq!(
             run(vec![String::from("rustic_factors")]).unwrap_err(),
             String::from("Usage: rustic_factors <algorithm> <number>")
-        );
-    }
-
-    #[test]
-    fn unknown_method() {
-        assert_eq!(
-            run(vec![
-                String::from("rustic_factors"),
-                String::from("unknown_method"),
-                String::from("123")
-            ])
-            .unwrap_err(),
-            String::from("Unknown algorithm. Available options: fermats_factorization_method, miller_rabin, pollards_rho, trial_division")
         );
     }
 }
