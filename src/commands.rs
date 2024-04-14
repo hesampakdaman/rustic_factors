@@ -20,27 +20,22 @@ impl CommandMap {
             .collect::<Vec<String>>()
             .join(", ")
     }
+
+    fn add_cmd(mut self, name: &str, cmd: CommandTraitObj) -> Self {
+        self.0.insert(name.to_string(), cmd);
+        self
+    }
 }
 
 impl Default for CommandMap {
     fn default() -> Self {
-        let mut commands = CommandMap(BTreeMap::new());
-        commands.0.insert(
-            "fermats_factorization_method".to_string(),
-            Box::new(algorithms::FermatsFactorizationMethod),
-        );
-        commands.0.insert(
-            "miller_rabin".to_string(),
-            Box::new(primality_test::MillerRabin),
-        );
-        commands.0.insert(
-            "pollards_rho".to_string(),
-            Box::new(algorithms::PollardsRho),
-        );
-        commands.0.insert(
-            "trial_division".to_string(),
-            Box::new(algorithms::TrialDivision),
-        );
-        commands
+        CommandMap(BTreeMap::new())
+            .add_cmd(
+                "fermats_factorization_method",
+                Box::new(algorithms::FermatsFactorizationMethod),
+            )
+            .add_cmd("miller_rabin", Box::new(primality_test::MillerRabin))
+            .add_cmd("pollards_rho", Box::new(algorithms::PollardsRho))
+            .add_cmd("trial_division", Box::new(algorithms::TrialDivision))
     }
 }
