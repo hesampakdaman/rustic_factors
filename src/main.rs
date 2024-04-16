@@ -7,7 +7,7 @@ fn main() {
     match cli(&args) {
         Ok(result) => println!("{result}"),
         Err(CliErr::ParseIntErr) => eprintln!("Please provide a number in range [0, 2⁵¹²)"),
-        Err(CliErr::IncorrectNumArgs) => eprintln!("Usage: {} <algorithm> <number>", args[0]),
+        Err(CliErr::IncorrectNumArgs) => eprintln!("Usage: {} <command> <number>", args[0]),
         Err(CliErr::CommandNotFound(commands)) => {
             eprintln!("Unknown command. Available options: {commands}.")
         }
