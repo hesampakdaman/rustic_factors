@@ -6,14 +6,11 @@ type CommandTraitObj = Box<dyn Command>;
 pub struct CommandMap(BTreeMap<String, CommandTraitObj>);
 
 impl CommandMap {
-    pub fn get(&self, name: &str) -> Result<&CommandTraitObj, String> {
-        self.0.get(name).ok_or(format!(
-            "Unknown algorithm. Available options: {}",
-            self.available_methods()
-        ))
+    pub fn get(&self, name: &str) -> Option<&CommandTraitObj> {
+        self.0.get(name)
     }
 
-    pub fn available_methods(&self) -> String {
+    pub fn available_commands(&self) -> String {
         self.0
             .keys()
             .map(|s| s.to_string())
