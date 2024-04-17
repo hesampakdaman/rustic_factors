@@ -58,34 +58,21 @@ fn format_factor(base: &U512, exponent: u128) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::PrimeFactorization;
 
-    struct FakePrimeFactorizer;
-
-    impl PrimeFactorization for FakePrimeFactorizer {
-        fn prime_factorization(n: &U512) -> Vec<U512> {
-            if n == &U512::from(36u8) {
-                vec![2u8, 2, 3, 3].into_iter().map(U512::from).collect()
-            } else {
-                vec![2u8; 12].into_iter().map(U512::from).collect()
-            }
-        }
-    }
-
-    fn check(n: u32, expected: &str) {
+    fn check(n: u32, factors: &[u32], expected: &str) {
         let n = U512::from(n);
-        let factors = FakePrimeFactorizer::prime_factorization(&n);
+        let factors = factors.iter().map(|&d| U512::from(d)).collect();
         let actual = Factorization::new(&n, factors);
         assert_eq!(format!("{actual}"), expected);
     }
 
     #[test]
     fn small_composite() {
-        check(36, "36 = 2² x 3²");
+        check(36, &[2, 2, 3, 3], "36 = 2² x 3²");
     }
 
     #[test]
     fn big_composite() {
-        check(4096, "4096 = 2¹²");
+        check(4096, &[2; 12], "4096 = 2¹²");
     }
 }
