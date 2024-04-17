@@ -27,11 +27,11 @@ fn cli(args: &[String]) -> Result<String, CliErr> {
 }
 
 fn parse(args: &[String]) -> Result<ParsedInput, CliErr> {
-    let method = String::from(&args[1]);
+    let command_name = String::from(&args[1]);
     let n: U512 = args[2].parse().map_err(|_| CliErr::ParseIntErr)?;
     Ok(ParsedInput {
         number: n,
-        command_name: method,
+        command_name,
     })
 }
 
@@ -54,10 +54,10 @@ mod tests {
     #[test]
     fn happy_cases() {
         let cmap = CommandMap::default();
-        for method in cmap.available_commands().split(", ") {
+        for command in cmap.available_commands().split(", ") {
             assert!(cli(&[
                 String::from("rustic_factors"),
-                String::from(method),
+                String::from(command),
                 String::from("123")
             ])
             .is_ok());
@@ -65,10 +65,10 @@ mod tests {
     }
 
     #[test]
-    fn unsupported_method() {
+    fn unsupported_command() {
         match cli(&[
             String::from("rustic_factors"),
-            String::from("unsupported method"),
+            String::from("unsupported command"),
             String::from("123"),
         ]) {
             Err(CliErr::CommandNotFound(_)) => (),
