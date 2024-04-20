@@ -1,9 +1,9 @@
 use super::check_test::CheckTest;
 use crate::traits::PrimeFactorization;
-use bnum::types::U256;
+use bnum::types::U512;
 
-type Factors = Vec<U256>;
-type TestCase = (U256, Factors);
+type Factors = Vec<U512>;
+type TestCase = (U512, Factors);
 pub struct CheckTestBuilder {
     cases: Vec<TestCase>,
 }
@@ -14,8 +14,8 @@ impl CheckTestBuilder {
     }
 
     pub fn case(mut self, n: u128, factors: &[u128]) -> Self {
-        let n_u512 = U256::from(n);
-        let factors_u512 = factors.iter().map(|&f| U256::from(f)).collect();
+        let n_u512 = U512::from(n);
+        let factors_u512 = factors.iter().map(|&f| U512::from(f)).collect();
         self.cases.push((n_u512, factors_u512));
         self
     }
