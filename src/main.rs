@@ -15,10 +15,7 @@ fn main() {
 }
 
 fn cli(args: &[String]) -> Result<String, CliErr> {
-    if args.len() != 3 {
-        return Err(CliErr::IncorrectNumArgs);
-    }
-    let input = parse(args)?;
+    let input = ParsedInput::try_from(args)?;
     let cmd_map = CommandMap::default();
     match cmd_map.get(&input.command_name) {
         Some(cmd) => Ok(format!("{}\n{}", input, cmd.run(&input.number))),
@@ -26,20 +23,23 @@ fn cli(args: &[String]) -> Result<String, CliErr> {
     }
 }
 
-fn parse(args: &[String]) -> Result<ParsedInput, CliErr> {
-    let command_name = String::from(&args[1]);
-    let n: U512 = args[2].parse().map_err(|_| CliErr::ParseIntErr)?;
-    Ok(ParsedInput {
-        number: n,
-        digit_len: args[2].len(),
-        command_name,
-    })
-}
-
 struct ParsedInput {
     number: U512,
     digit_len: usize,
     command_name: String,
+}
+
+impl TryFrom<&[String]> for ParsedInput {
+    type Error = CliErr;
+
+    fn try_from(value: &[String]) -> Result<Self, Self::Error> {
+        let slice: &[String; 3] = value.try_into().map_err(|_| CliErr::IncorrectNumArgs)?;
+        Ok(ParsedInput {
+            number: slice[2].parse().map_err(|_| CliErr::ParseIntErr)?,
+            digit_len: slice[2].len(),
+            command_name: slice[1].to_string(),
+        })
+    }
 }
 
 impl std::fmt::Display for ParsedInput {
