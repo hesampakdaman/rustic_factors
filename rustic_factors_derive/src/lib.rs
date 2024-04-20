@@ -11,7 +11,7 @@ fn impl_recursive_prime_factorization(ast: &syn::DeriveInput) -> TokenStream {
     let name = &ast.ident;
     let gen = quote! {
         impl crate::traits::PrimeFactorization for #name {
-            fn prime_factorization(n: &bnum::types::U512) -> Vec<bnum::types::U512> {
+            fn prime_factorization(n: &bnum::types::U256) -> Vec<bnum::types::U256> {
                 crate::orchestration::RecursivePrimeFactorization::<Self, crate::primality_test::MillerRabin>::prime_factorization(n)
             }
         }
@@ -29,7 +29,7 @@ fn impl_factorization_command(ast: &syn::DeriveInput) -> TokenStream {
     let name = &ast.ident;
     let gen = quote! {
         impl crate::traits::Command for #name {
-            fn run(&self, n: &U512) -> String {
+            fn run(&self, n: &U256) -> String {
                 crate::Factorization::new(n, Self::prime_factorization(n)).to_string()
             }
         }

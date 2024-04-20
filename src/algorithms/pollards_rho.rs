@@ -1,7 +1,7 @@
 mod utils;
 
 use crate::traits::{Factorize, PrimeFactorization};
-use bnum::types::U512;
+use bnum::types::U256;
 use num_integer::Integer;
 use rustic_factors_derive::{FactorizationCommand, RecursivePrimeFactorization};
 
@@ -9,10 +9,10 @@ use rustic_factors_derive::{FactorizationCommand, RecursivePrimeFactorization};
 pub struct PollardsRho;
 
 impl Factorize for PollardsRho {
-    fn factorize(n: &U512) -> U512 {
-        let init = U512::from(2u8);
+    fn factorize(n: &U256) -> U256 {
+        let init = U256::from(2u8);
         let pseudorandom_fn = utils::generate_pseudorandom_fn(n);
-        let finished = move |x: &U512, y: &U512| x.abs_diff(*y).gcd(n) != U512::from(1u8);
+        let finished = move |x: &U256, y: &U256| x.abs_diff(*y).gcd(n) != U256::from(1u8);
         let (tortoise, hare) = utils::floyds_cycle_detection(init, &pseudorandom_fn, &finished);
         hare.abs_diff(tortoise).gcd(n)
     }

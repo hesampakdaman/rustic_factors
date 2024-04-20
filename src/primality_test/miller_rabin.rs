@@ -3,13 +3,13 @@ mod utils;
 
 use self::composite_evidence::CompositeEvidence;
 use crate::traits::{Command, PrimalityTest};
-use bnum::types::U512;
+use bnum::types::U256;
 use num_integer::Integer;
 
 pub struct MillerRabin;
 
 impl Command for MillerRabin {
-    fn run(&self, n: &U512) -> String {
+    fn run(&self, n: &U256) -> String {
         if MillerRabin::is_prime(n) {
             format!("{} is prime", n)
         } else {
@@ -19,21 +19,21 @@ impl Command for MillerRabin {
 }
 
 impl PrimalityTest for MillerRabin {
-    fn is_prime(p: &U512) -> bool {
-        if p == &U512::TWO || p == &U512::THREE {
+    fn is_prime(p: &U256) -> bool {
+        if p == &U256::TWO || p == &U256::THREE {
             return true;
         }
-        if p < &U512::TWO || p.is_multiple_of(&U512::TWO) {
+        if p < &U256::TWO || p.is_multiple_of(&U256::TWO) {
             return false;
         }
         miller_rabin(p, 50)
     }
 }
 
-fn miller_rabin(p: &U512, trials: usize) -> bool {
+fn miller_rabin(p: &U256, trials: usize) -> bool {
     let evidence = CompositeEvidence::new(p);
     let likely_prime = |witness| !evidence.witnessed_by(&witness);
-    utils::RandomIntegers::new(U512::TWO..p - U512::ONE)
+    utils::RandomIntegers::new(U256::TWO..p - U256::ONE)
         .take(trials)
         .all(likely_prime)
 }
@@ -44,7 +44,7 @@ mod tests {
 
     fn check(p: u32, expected: bool) {
         assert_eq!(
-            MillerRabin::is_prime(&U512::from(p)),
+            MillerRabin::is_prime(&U256::from(p)),
             expected,
             "Test failed for {}",
             p

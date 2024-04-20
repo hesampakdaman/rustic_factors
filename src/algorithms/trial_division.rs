@@ -1,5 +1,5 @@
 use crate::PrimeFactorization;
-use bnum::types::U512;
+use bnum::types::U256;
 use num_integer::Integer;
 use num_traits::One;
 use rustic_factors_derive::FactorizationCommand;
@@ -8,15 +8,15 @@ use rustic_factors_derive::FactorizationCommand;
 pub struct TrialDivision;
 
 impl PrimeFactorization for TrialDivision {
-    fn prime_factorization(n: &U512) -> Vec<U512> {
-        if n <= &U512::one() {
+    fn prime_factorization(n: &U256) -> Vec<U256> {
+        if n <= &U256::one() {
             return vec![*n];
         }
         trial_div(*n)
     }
 }
 
-fn trial_div(mut n: U512) -> Vec<U512> {
+fn trial_div(mut n: U256) -> Vec<U256> {
     let mut factors = vec![];
     let divisors = DivisorCandidates::new();
     for d in divisors {
@@ -34,31 +34,31 @@ fn trial_div(mut n: U512) -> Vec<U512> {
     factors
 }
 
-fn is_still_undivided(n: &U512) -> bool {
+fn is_still_undivided(n: &U256) -> bool {
     !n.is_one()
 }
 
 struct DivisorCandidates {
-    current: U512,
+    current: U256,
 }
 
 impl DivisorCandidates {
     fn new() -> Self {
         DivisorCandidates {
-            current: U512::from(2u8),
+            current: U256::from(2u8),
         }
     }
 }
 
 impl Iterator for DivisorCandidates {
-    type Item = U512;
+    type Item = U256;
 
     fn next(&mut self) -> Option<Self::Item> {
         let output = self.current;
-        self.current = if self.current == U512::from(2u8) {
-            self.current + U512::from(1u8)
+        self.current = if self.current == U256::from(2u8) {
+            self.current + U256::from(1u8)
         } else {
-            self.current + U512::from(2u8)
+            self.current + U256::from(2u8)
         };
         Some(output)
     }
