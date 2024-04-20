@@ -1,16 +1,16 @@
-use bnum::types::U512;
+use bnum::types::U256;
 use std::collections::BTreeMap;
 use std::fmt;
 
 static SUPERSCRIPTS: [&str; 10] = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"];
 
 pub struct Factorization<'a> {
-    number: &'a U512,
-    factors: Vec<U512>,
+    number: &'a U256,
+    factors: Vec<U256>,
 }
 
 impl<'a> Factorization<'a> {
-    pub fn new(number: &'a U512, factors: Vec<U512>) -> Self {
+    pub fn new(number: &'a U256, factors: Vec<U256>) -> Self {
         Self { number, factors }
     }
 
@@ -26,7 +26,7 @@ impl<'a> Factorization<'a> {
         )
     }
 
-    fn factor_frequencies(&self) -> BTreeMap<&U512, u128> {
+    fn factor_frequencies(&self) -> BTreeMap<&U256, u128> {
         self.factors.iter().fold(BTreeMap::new(), |mut bmap, n| {
             *bmap.entry(n).or_insert(0) += 1;
             bmap
@@ -40,7 +40,7 @@ impl fmt::Display for Factorization<'_> {
     }
 }
 
-fn format_factor(base: &U512, exponent: u128) -> String {
+fn format_factor(base: &U256, exponent: u128) -> String {
     fn to_superscript(exp: u128) -> String {
         if exp <= 1 {
             return "".to_string();
@@ -60,8 +60,8 @@ mod tests {
     use super::*;
 
     fn check(n: u32, factors: &[u32], expected: &str) {
-        let n = U512::from(n);
-        let factors = factors.iter().map(|&d| U512::from(d)).collect();
+        let n = U256::from(n);
+        let factors = factors.iter().map(|&d| U256::from(d)).collect();
         let actual = Factorization::new(&n, factors);
         assert_eq!(format!("{actual}"), expected);
     }

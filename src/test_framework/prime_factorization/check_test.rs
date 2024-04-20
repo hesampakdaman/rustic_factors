@@ -1,8 +1,8 @@
 use crate::traits::PrimeFactorization;
-use bnum::types::U512;
+use bnum::types::U256;
 use std::marker::PhantomData;
 
-type TestCase = (U512, Vec<U512>);
+type TestCase = (U256, Vec<U256>);
 
 pub struct CheckTest<F: PrimeFactorization> {
     cases: Vec<TestCase>,
@@ -23,7 +23,7 @@ impl<F: PrimeFactorization> CheckTest<F> {
         }
     }
 
-    pub fn check(n: &U512, expected: &[U512]) {
+    pub fn check(n: &U256, expected: &[U256]) {
         let mut actual = F::prime_factorization(&n);
         actual.sort_unstable();
         assert_eq!(actual, expected, "Test failed for n = {}", n);
