@@ -1,7 +1,6 @@
 use crate::traits::{Factorize, PrimalityTest, PrimeFactorization};
 use bnum::types::U256;
 use num_integer::Integer;
-use num_traits::One;
 use std::marker::PhantomData;
 
 pub struct RecursivePrimeFactorization<F, P>
@@ -41,10 +40,9 @@ where
 
     fn recursive_factorization(&self, mut n: U256) -> Vec<U256> {
         let mut factors = vec![];
-        let two = U256::from(2u8);
         while n.is_even() {
-            factors.push(two);
-            n /= &two;
+            factors.push(U256::TWO);
+            n /= &U256::TWO;
         }
         self.recursion_step(n, &mut factors, 0);
         factors
@@ -57,7 +55,11 @@ where
                 self.max_successive_fails
             ]
         }
-        if n <= U256::one() {
+        if n <= U256::ONE {
+            return;
+        }
+        if PrimeTester::is_prime(&n) {
+            factors.push(n);
             return;
         }
         match self.classify_factor(Factorizer::factorize(&n), &n) {
@@ -94,7 +96,6 @@ enum DivisorOfN {
 mod tests {
     use super::*;
     use crate::test_framework::prime_factorization::CheckTestBuilder;
-    use num_traits::Zero;
 
     struct FakePrimeTester;
 
@@ -109,15 +110,15 @@ mod tests {
     impl Factorize for FakeFactorizer {
         fn factorize(n: &U256) -> U256 {
             if n.is_even() {
-                return U256::from(2u8);
+                return U256::TWO;
             }
-            if n % U256::from(3u8) == U256::zero() {
-                return U256::from(3u8);
+            if n % U256::THREE == U256::ZERO {
+                return U256::THREE;
             }
-            if n % U256::from(5u8) == U256::zero() {
-                return U256::from(5u8);
+            if n % U256::FIVE == U256::ZERO {
+                return U256::FIVE;
             }
-            n.to_owned()
+            *n
         }
     }
 
