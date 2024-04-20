@@ -26,7 +26,7 @@ pub fn highest_power_of_2_divisor(base: &U512) -> u32 {
     let mut base = *base;
     while base.is_even() {
         exp += 1;
-        base /= U512::from(2u8);
+        base /= U512::TWO;
     }
     exp
 }

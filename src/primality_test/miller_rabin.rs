@@ -20,21 +20,20 @@ impl Command for MillerRabin {
 
 impl PrimalityTest for MillerRabin {
     fn is_prime(p: &U512) -> bool {
-        let two = U512::from(2u8);
-        if p == &two || p == &U512::from(3u8) {
+        if p == &U512::TWO || p == &U512::THREE {
             return true;
         }
-        if p < &two || p.is_multiple_of(&two) {
+        if p < &U512::TWO || p.is_multiple_of(&U512::TWO) {
             return false;
         }
-        miller_rabin(p, 10)
+        miller_rabin(p, 50)
     }
 }
 
 fn miller_rabin(p: &U512, trials: usize) -> bool {
     let evidence = CompositeEvidence::new(p);
     let likely_prime = |witness| !evidence.witnessed_by(&witness);
-    utils::RandomIntegers::new(U512::from(2u8)..p - U512::from(1u8))
+    utils::RandomIntegers::new(U512::TWO..p - U512::ONE)
         .take(trials)
         .all(likely_prime)
 }
@@ -47,7 +46,7 @@ mod tests {
         assert_eq!(
             MillerRabin::is_prime(&U512::from(p)),
             expected,
-            "Test failed for prime = {}",
+            "Test failed for {}",
             p
         )
     }
