@@ -1,4 +1,4 @@
-use bnum::types::U256;
+use bnum::types::U512;
 use rustic_factors::commands::CommandMap;
 use std::env;
 
@@ -6,7 +6,7 @@ fn main() {
     let args: Vec<String> = env::args().collect();
     match cli(&args) {
         Ok(result) => println!("{result}"),
-        Err(CliErr::ParseIntErr) => eprintln!("Please provide a number in range [0, 2²⁵⁶)"),
+        Err(CliErr::ParseIntErr) => eprintln!("Please provide a number in range [0, 2⁵¹²)"),
         Err(CliErr::IncorrectNumArgs) => eprintln!("Usage: {} <command> <number>", args[0]),
         Err(CliErr::CommandNotFound(commands)) => {
             eprintln!("Unknown command. Available options: {commands}.")
@@ -28,7 +28,7 @@ fn cli(args: &[String]) -> Result<String, CliErr> {
 
 fn parse(args: &[String]) -> Result<ParsedInput, CliErr> {
     let command_name = String::from(&args[1]);
-    let n: U256 = args[2].parse().map_err(|_| CliErr::ParseIntErr)?;
+    let n: U512 = args[2].parse().map_err(|_| CliErr::ParseIntErr)?;
     Ok(ParsedInput {
         number: n,
         digit_len: args[2].len(),
@@ -37,7 +37,7 @@ fn parse(args: &[String]) -> Result<ParsedInput, CliErr> {
 }
 
 struct ParsedInput {
-    number: U256,
+    number: U512,
     digit_len: usize,
     command_name: String,
 }

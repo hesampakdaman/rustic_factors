@@ -1,5 +1,5 @@
 use crate::traits::{Factorize, PrimeFactorization};
-use bnum::types::U256;
+use bnum::types::U512;
 use num_integer::Roots;
 use rustic_factors_derive::{FactorizationCommand, RecursivePrimeFactorization};
 
@@ -7,26 +7,26 @@ use rustic_factors_derive::{FactorizationCommand, RecursivePrimeFactorization};
 pub struct FermatsFactorizationMethod;
 
 impl Factorize for FermatsFactorizationMethod {
-    fn factorize(n: &U256) -> U256 {
+    fn factorize(n: &U512) -> U512 {
         let mut a = ceil_sqrt(n);
         let mut b2 = a * a - n;
         while !is_perfect_square(&b2) {
-            a += U256::ONE;
+            a += U512::ONE;
             b2 = a * a - n;
         }
         a + b2.sqrt()
     }
 }
 
-fn ceil_sqrt(n: &U256) -> U256 {
+fn ceil_sqrt(n: &U512) -> U512 {
     if is_perfect_square(n) {
         n.sqrt()
     } else {
-        n.sqrt() + U256::ONE
+        n.sqrt() + U512::ONE
     }
 }
 
-fn is_perfect_square(n: &U256) -> bool {
+fn is_perfect_square(n: &U512) -> bool {
     let sqrt = n.sqrt();
     sqrt * sqrt == *n
 }
