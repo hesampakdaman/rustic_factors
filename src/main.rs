@@ -21,7 +21,7 @@ fn cli(args: &[String]) -> Result<String, CliErr> {
     let input = parse(args)?;
     let cmd_map = CommandMap::default();
     match cmd_map.get(&input.command_name) {
-        Some(cmd) => Ok(cmd.run(&input.number)),
+        Some(cmd) => Ok(format!("{}\n{}", input, cmd.run(&input.number))),
         None => Err(CliErr::CommandNotFound(cmd_map.available_commands())),
     }
 }
@@ -31,13 +31,25 @@ fn parse(args: &[String]) -> Result<ParsedInput, CliErr> {
     let n: U256 = args[2].parse().map_err(|_| CliErr::ParseIntErr)?;
     Ok(ParsedInput {
         number: n,
+        digit_len: args[2].len(),
         command_name,
     })
 }
 
 struct ParsedInput {
     number: U256,
+    digit_len: usize,
     command_name: String,
+}
+
+impl std::fmt::Display for ParsedInput {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "Using command {} with number {} ({} digits)",
+            self.command_name, self.number, self.digit_len
+        )
+    }
 }
 
 #[derive(PartialEq, Debug)]
