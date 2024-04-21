@@ -67,6 +67,13 @@ mod tests {
     use crate::test_framework::prime_factorization::CheckTestBuilder;
 
     #[test]
+    fn default() {
+        CheckTestBuilder::default()
+            .build::<TrialDivision>()
+            .check_cases()
+    }
+
+    #[test]
     fn prime() {
         CheckTestBuilder::new()
             .case(13, &[13])
