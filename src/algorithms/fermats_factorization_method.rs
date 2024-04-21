@@ -37,6 +37,13 @@ mod tests {
     use crate::test_framework::prime_factorization::CheckTestBuilder;
 
     #[test]
+    fn default() {
+        CheckTestBuilder::default()
+            .build::<FermatsFactorizationMethod>()
+            .check_cases()
+    }
+
+    #[test]
     fn composites() {
         CheckTestBuilder::new()
             .case(5959, &[59, 101])
