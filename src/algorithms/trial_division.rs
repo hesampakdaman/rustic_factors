@@ -1,7 +1,6 @@
 use crate::PrimeFactorization;
 use bnum::types::U512;
 use num_integer::Integer;
-use num_traits::One;
 use rustic_factors_derive::FactorizationCommand;
 
 #[derive(FactorizationCommand)]
@@ -9,7 +8,7 @@ pub struct TrialDivision;
 
 impl PrimeFactorization for TrialDivision {
     fn prime_factorization(n: &U512) -> Vec<U512> {
-        if n <= &U512::one() {
+        if n <= &U512::ONE {
             return vec![*n];
         }
         trial_div(*n)
@@ -44,9 +43,7 @@ struct DivisorCandidates {
 
 impl DivisorCandidates {
     fn new() -> Self {
-        DivisorCandidates {
-            current: U512::from(2u8),
-        }
+        DivisorCandidates { current: U512::TWO }
     }
 }
 
@@ -55,10 +52,10 @@ impl Iterator for DivisorCandidates {
 
     fn next(&mut self) -> Option<Self::Item> {
         let output = self.current;
-        self.current = if self.current == U512::from(2u8) {
-            self.current + U512::from(1u8)
+        self.current = if self.current == U512::TWO {
+            self.current + U512::ONE
         } else {
-            self.current + U512::from(2u8)
+            self.current + U512::TWO
         };
         Some(output)
     }
