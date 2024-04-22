@@ -3,9 +3,10 @@ use bnum::types::U512;
 
 pub fn run(args: &[String]) -> Result<String, Error> {
     let input = ParsedInput::try_from(args)?;
+    println!("{}...", &input);
     let cmd_map = CommandMap::default();
     match cmd_map.get(&input.command_name) {
-        Some(cmd) => Ok(format!("{}\n{}", input, cmd.run(&input.number))),
+        Some(cmd) => Ok(format!("{}", cmd.run(&input.number))),
         None => Err(Error::CommandNotFound(cmd_map.available_commands())),
     }
 }
