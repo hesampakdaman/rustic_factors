@@ -51,10 +51,10 @@ The =rustic_factors= project features a test framework called =CheckTestBuilder=
 
 To facilitate quick and efficient testing, a default configuration of the builder is provided, preloaded with common test cases
 #+BEGIN_SRC rust
-#[test]
-fn default() {
-    CheckTestBuilder::default()
-        .build::<T>() // Here T implements PrimeFactorization
-        .check_cases()
-}
+  #[test]
+  fn default() {
+      CheckTestBuilder::default()
+          .build::<T>()
+          .check_cases()
+  }
 #+END_SRC
