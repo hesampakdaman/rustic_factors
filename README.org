@@ -1,0 +1,36 @@
+* rustic_factors
+=rustic_factors= is a personal project that explores various number factorization algorithms using Rust. It is designed to learn advanced Rust features such as generics, dynamic dispatch, and procedural macros while experimenting with essential design patterns including Strategy, Builder, and New Type. For a detailed overview of the project architecture and the application of these patterns, please refer to the accompanying =ARCHITECTURE.org=.
+
+** Installation
+To install =rustic_factors=, ensure Rust and Cargo are installed on your machine. You can then build the project using =cargo=
+
+#+BEGIN_SRC shell
+$ cargo build --release
+#+END_SRC
+
+To ensure your installation is functioning as expected, run the test suite with
+
+#+BEGIN_SRC shell
+$ cargo test
+#+END_SRC
+
+** Usage
+To use =rustic_factors=, specify an algorithm and a positive number less than 2^{512}
+
+#+BEGIN_SRC shell
+$ cargo run --release [algorithm] [number]
+#+END_SRC
+
+For example, to factorize the number $8051$ using Pollard's Rho, enter
+
+#+BEGIN_SRC shell
+$ cargo run --release pollards_rho 8051
+#+END_SRC
+
+Additional factorization commands are =fermats_factorization_method= and =trial_division=. Additionally, =rustic_factors= includes the Miller-Rabin primality test to check if a number is prime
+
+#+BEGIN_SRC shell
+$ cargo run --release miller_rabin 561
+#+END_SRC
+
+This command checks whether $561$ is a prime number using the Miller-Rabin test.
