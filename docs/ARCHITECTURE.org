@@ -1,0 +1,60 @@
+* Architecture overview
+=rustic_factors= employs a robust architecture defined by several key traits, each serving specific roles within the domain of number factorization. These traits ensure clear separation of concerns, flexibility, and reusability across different components of the application.
+
+The project structure encourages the addition of new types that implement the trait =Factorize=. Through procedural macros, these types can enable prime factorization. To allow users to select these types via commands in the CLI, a derive macro for dynamic dispatch is also provided.
+#+begin_src rust
+  #[derive(FactorizationCommand, PrimeFactorization)]
+  // T only needs to implement the static trait Factorize
+  struct T;
+#+end_src
+
+The architecture utilizes Rust's trait and type system to facilitate dynamic dispatch, enabling the application to select and execute specific algorithms at runtime based on the configuration. Detailed explanations on how these traits interact within specific contexts and scenarios are available in the code documentation and module descriptions.
+
+** Traits and their roles
+*** Factorize
+This trait is responsible for factorizing a number into smaller parts but not necessarily achieving complete prime factorization. Every algorithm capable of basic factorization tasks implements this trait, allowing the use of the Strategy pattern. The method is static to ensure that no state is kept between invocations.
+
+*** PrimeFactorization
+This trait is intended for algorithms that decompose a number into its prime factors. It remains static, mirroring the =Factorize= trait. It can be automatically derived for any trait that implements =Factorize=, leveraging a recursive orchestrator that uses the factorize method recursively until the number is fully decomposed into prime factors.
+#+begin_src rust
+  #[derive(RecursivePrimeFactorization)]
+  pub struct T; // Here T implements Factorize
+#+end_src
+
+*** PrimalityTest
+This trait is focused on determining if a number is prime and is vital for algorithms that verify the primality of components during the factorization process, especially when used iteratively with an algorithm that implements =Factorize=.
+
+*** Command
+This trait facilitates dynamic dispatch within the small CLI used in =main.rs= for runtime flexibility and user interaction. Each front-facing algorithm implements this trait, enabling dynamic execution based on user input or runtime decisions.
+
+*** FactorizationCommand
+This trait integrates =Command= with =PrimeFactorization= to handle factorization commands uniformly. It is automatically derived for traits that implement =PrimeFactorization=, allowing any prime factorization algorithm to also function as a command.
+#+begin_src rust
+  #[derive(FactorizationCommand)]
+  pub struct T; // Here T implements PrimeFactorization
+#+end_src
+
+** Test Framework and Builder Pattern
+The =rustic_factors= project features a test framework called =CheckTestBuilder=, which employs the Builder pattern to construct test cases for factorization algorithms. This framework simplifies the setup of complex test scenarios, ensuring comprehensive validation of each algorithm. The =CheckTestBuilder= enables dynamic construction of test cases, allowing each case to be precisely defined with specific inputs and expected outputs for high flexibility and robustness.
+#+BEGIN_SRC rust
+  #[test]
+  fn my_test() {
+      CheckTestBuilder::new()
+          .case(3, &[3])
+          .case(5, &[5])
+          .case(15, &[3, 5])
+          // ...
+          .build::<T>() // T implements PrimeFactorization
+          .check_cases()
+  }
+#+END_SRC
+
+To facilitate quick and efficient testing, a default configuration of the builder is provided, preloaded with common test cases
+#+BEGIN_SRC rust
+#[test]
+fn default() {
+    CheckTestBuilder::default()
+        .build::<T>() // Here T implements PrimeFactorization
+        .check_cases()
+}
+#+END_SRC
