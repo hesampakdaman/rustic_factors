@@ -1,5 +1,5 @@
 * rustic_factors
-=rustic_factors= is a personal project that explores various number factorization algorithms using Rust. It is designed to learn advanced Rust features such as generics, dynamic dispatch, and procedural macros while experimenting with essential design patterns including Strategy, Builder, and New Type. For a detailed overview of the project architecture and the application of these patterns, please refer to the accompanying =ARCHITECTURE.org=.
+=rustic_factors= is a personal project that explores various number factorization algorithms using Rust. It is designed to learn advanced Rust features such as generics, dynamic dispatch, and procedural macros while experimenting with essential design patterns including Strategy, Builder, and New Type. For a detailed overview of the project architecture and the application of these patterns, please refer to the accompanying [[https://github.com/hesampakdaman/rustic_factors/blob/main/docs/architecture.org][ARCHITECTURE]] document.
 
 ** Installation
 To install =rustic_factors=, ensure Rust and Cargo are installed on your machine. You can then build the project using =cargo=
