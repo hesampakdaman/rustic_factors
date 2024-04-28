@@ -10,9 +10,9 @@ pub struct PollardsRho;
 
 impl Factorize for PollardsRho {
     fn factorize(n: &U512) -> U512 {
-        let init = U512::from(2u8);
+        let init = U512::TWO;
         let pseudorandom_fn = utils::generate_pseudorandom_fn(n);
-        let finished = move |x: &U512, y: &U512| x.abs_diff(*y).gcd(n) != U512::from(1u8);
+        let finished = move |x: &U512, y: &U512| x.abs_diff(*y).gcd(n) != U512::ONE;
         let (tortoise, hare) = utils::floyds_cycle_detection(init, &pseudorandom_fn, &finished);
         hare.abs_diff(tortoise).gcd(n)
     }

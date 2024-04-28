@@ -21,5 +21,5 @@ pub fn generate_pseudorandom_fn(n: &'_ U512) -> impl Fn(&U512) -> U512 + '_ {
 }
 
 fn random_integer(bound: &U512) -> U512 {
-    rand::thread_rng().gen_range(U512::from(2u8)..*bound)
+    rand::thread_rng().gen_range(U512::TWO..*bound)
 }
