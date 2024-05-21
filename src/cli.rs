@@ -6,7 +6,7 @@ pub fn run(args: &[String]) -> Result<String, Error> {
     println!("{}...", &input);
     let cmd_map = CommandMap::default();
     match cmd_map.get(&input.command_name) {
-        Some(cmd) => Ok(format!("{}", cmd.run(&input.number))),
+        Some(cmd) => Ok(cmd.run(&input.number).to_string()),
         None => Err(Error::CommandNotFound(cmd_map.available_commands())),
     }
 }

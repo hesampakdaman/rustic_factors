@@ -63,7 +63,7 @@ where
             return;
         }
         match self.classify_factor(Factorizer::factorize(&n), &n) {
-            DivisorOfN::Trivial(_) => self.recursion_step(n, factors, retried + 1),
+            DivisorOfN::Trivial => self.recursion_step(n, factors, retried + 1),
             DivisorOfN::Prime(p) => {
                 factors.push(p);
                 self.recursion_step(n / p, factors, 0);
@@ -80,7 +80,8 @@ where
             return DivisorOfN::Prime(factor);
         }
         if factor.is_one() || &factor == n {
-            return DivisorOfN::Trivial(factor);
+            return DivisorOfN::Trivial
+;
         }
         DivisorOfN::Composite(factor)
     }
@@ -89,7 +90,7 @@ where
 enum DivisorOfN {
     Prime(U512),
     Composite(U512),
-    Trivial(U512),
+    Trivial,
 }
 
 #[cfg(test)]
